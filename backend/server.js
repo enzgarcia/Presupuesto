@@ -405,5 +405,5 @@ app.get('/api/resumen', (req, res) => {
   res.json({ cred, orig, comp, dev, saldo, pct, pendCount: pendCount(db) });
 });
 
-console.log(`🚀 Servidor presupuesto DGCICD running on http://localhost:${PORT}`);
+console.log(`🚀 Servidor presupuesto DGCICD running on http://10.116.17.104:${PORT}`);
 app.listen(PORT);

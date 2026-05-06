@@ -283,6 +283,51 @@
       "subtareas": [],
       "creado": "2026-01-01",
       "creadoPor": "Sistema"
+    },
+    {
+      "id": "motzdy3zj6sdx",
+      "desc": "hola mundo'",
+      "prog": "—",
+      "act": "—",
+      "ref": "—",
+      "i2": 0,
+      "i3": 0,
+      "i4": 0,
+      "i5": 0,
+      "i6": 0,
+      "subtareas": [],
+      "creado": "2026-05-06",
+      "creadoPor": "TC Paulo ESPINOLA"
+    },
+    {
+      "id": "mou4esuuvkji4",
+      "desc": "Hola mundo 2",
+      "prog": "—",
+      "act": "—",
+      "ref": "—",
+      "i2": 0,
+      "i3": 0,
+      "i4": 0,
+      "i5": 0,
+      "i6": 0,
+      "subtareas": [],
+      "creado": "2026-05-06",
+      "creadoPor": "TC Paulo ESPINOLA"
+    },
+    {
+      "id": "mou4j00d5njqa",
+      "desc": "contrato compu",
+      "prog": "11",
+      "act": "22",
+      "ref": "33",
+      "i2": 1,
+      "i3": 0,
+      "i4": 0,
+      "i5": 0,
+      "i6": 0,
+      "subtareas": [],
+      "creado": "2026-05-06",
+      "creadoPor": "SP Jorge GRAMAJO"
     }
   ],
   "compromisos": [],
@@ -290,6 +335,27 @@
   "ampliaciones": [],
   "pendientes": [],
   "historial": [
+    {
+      "id": "mou4j00dd2kzf",
+      "tipo": "success",
+      "texto": "Nueva tarea: contrato compu",
+      "ts": "06/05/2026, 10:59 a. m.",
+      "user": "SP Jorge GRAMAJO"
+    },
+    {
+      "id": "mou4esuu0t54p",
+      "tipo": "success",
+      "texto": "Nueva tarea: Hola mundo 2",
+      "ts": "06/05/2026, 10:56 a. m.",
+      "user": "TC Paulo ESPINOLA"
+    },
+    {
+      "id": "motzdy3zdrc6g",
+      "tipo": "success",
+      "texto": "Nueva tarea: hola mundo'",
+      "ts": "06/05/2026, 08:35 a. m.",
+      "user": "TC Paulo ESPINOLA"
+    },
     {
       "id": "mosu32hq7qc4s",
       "tipo": "danger",
