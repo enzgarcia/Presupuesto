@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DGCICD — Gestión Presupuestaria EF 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#07111f;--navy2:#0d1f35;--navy3:#132840;
+  --gold:#c9a84c;--gold2:#e8c870;--gold3:#f5e0a0;
+  --green:#1a9e6e;--green2:#14c484;
+  --red:#c0392b;--red2:#e74c3c;
+  --amber:#d97706;--amber2:#f59e0b;
+  --blue:#1d5fa8;--blue2:#2980d4;
+  --purple:#6d28d9;
+  --border:#1e3550;--border2:#2a4a6a;
+  --text:#e8eef5;--text2:#8fa8c0;--text3:#5a7a96;
+  --bg:#07111f;--bg2:#0d1f35;--bg3:#132840;--bg4:#1a3450;
+  --font:'IBM Plex Sans',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+  --r4:4px;--r6:6px;--r8:8px;--r12:12px;--r16:16px;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:13px;line-height:1.5}
+input,select,textarea,button{font-family:var(--font)}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 30% 40%,#0d2a4a 0%,#07111f 70%)}
+.login-box{width:420px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r16);padding:36px;box-shadow:0 24px 80px rgba(0,0,0,.6)}
+.login-crest{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:24px}
+.crest-shield{width:52px;height:52px;background:var(--gold);border-radius:var(--r8);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--navy);letter-spacing:-1px;flex-shrink:0}
+.crest-text{line-height:1.2}
+.crest-unit{font-size:15px;font-weight:700;color:var(--gold)}
+.crest-sub{font-size:10px;color:var(--text2);letter-spacing:.8px;text-transform:uppercase;margin-top:2px}
+.login-title{text-align:center;font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.login-date{text-align:center;font-size:11px;color:var(--gold);margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.ucard{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r8);margin-bottom:8px;cursor:pointer;transition:all .15s;background:var(--bg3)}
+.ucard:hover{border-color:var(--gold);background:var(--bg4);transform:translateX(3px)}
+.ucard.selected{border-color:var(--gold);background:var(--bg4)}
+.uavatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.uname{font-size:13px;font-weight:600;color:var(--text)}
+.urole{font-size:10px;color:var(--text3);margin-top:1px}
+.pin-section{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);display:none}
+.pin-label{font-size:10px;color:var(--text2);letter-spacing:.6px;text-transform:uppercase;margin-bottom:8px}
+.pin-input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:var(--r6);padding:10px 14px;color:var(--text);font-size:18px;letter-spacing:8px;text-align:center;transition:border .15s}
+.pin-input:focus{outline:none;border-color:var(--gold)}
+.pin-error{font-size:11px;color:var(--red2);text-align:center;margin-top:6px;display:none}
+.btn-login{width:100%;margin-top:10px;padding:10px;background:var(--gold);color:var(--navy);border:none;border-radius:var(--r6);font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.3px;transition:opacity .15s}
+.btn-login:hover{opacity:.9}
+
+#app{display:none;flex-direction:column;min-height:100vh}
+.topbar{background:var(--bg2);border-bottom:2px solid var(--gold);padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:sticky;top:0;z-index:50}
+.tb-left{display:flex;align-items:center;gap:12px}
+.tb-shield{width:32px;height:32px;background:var(--gold);border-radius:var(--r4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--navy)}
+.tb-title{font-size:13px;font-weight:700;color:var(--text)}
+.tb-sub{font-size:10px;color:var(--text3);margin-top:1px}
+.tb-right{display:flex;align-items:center;gap:8px}
+.online-pill{display:flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:10px;color:var(--text2)}
+.online-dot{width:6px;height:6px;border-radius:50%;background:var(--green2)}
+.btn-out{background:none;border:1px solid var(--border);border-radius:var(--r4);color:var(--text3);font-size:10px;padding:4px 10px;cursor:pointer;letter-spacing:.3px;text-transform:uppercase;transition:all .15s}
+.btn-out:hover{border-color:var(--text2);color:var(--text)}
+
+.alert-banner{display:none;align-items:center;gap:10px;padding:7px 20px;font-size:11px;border-bottom:1px solid;flex-shrink:0}
+.alert-banner.show{display:flex}
+.ab-lock{background:#2d1a00;border-color:#8a5000;color:#f59e0b}
+.ab-warn{background:#1f0d0d;border-color:#7a1f1f;color:#f87171}
+.ab-info{background:#0d1f2d;border-color:#1d5fa8;color:#7dd3fc}
+.ab-pend{background:#1a1100;border-color:#856a00;color:#fbbf24}
+.banner-close{margin-left:auto;cursor:pointer;opacity:.6;font-size:14px;line-height:1}
+.banner-close:hover{opacity:1}
+
+.toast-wrap{position:fixed;top:60px;right:16px;z-index:200;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast{background:var(--bg3);border:1px solid var(--border2);border-left:3px solid var(--green);border-radius:var(--r8);padding:10px 14px;font-size:11px;color:var(--text);min-width:260px;max-width:340px;pointer-events:auto;animation:slideIn .2s ease;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.toast.warn{border-left-color:var(--amber)}
+.toast.err{border-left-color:var(--red2)}
+.toast.pend{border-left-color:var(--gold)}
+@keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast-title{font-weight:600;margin-bottom:2px}
+.toast-body{color:var(--text2)}
+
+.sumbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 20px;display:grid;grid-template-columns:repeat(6,1fr);gap:8px;flex-shrink:0}
+.scard{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r6);padding:8px 10px;text-align:center}
+.sc-label{font-size:9px;color:var(--text3);letter-spacing:.7px;text-transform:uppercase;margin-bottom:3px}
+.sc-val{font-size:12px;font-weight:700;color:var(--text);font-family:var(--mono)}
+.sc-val.g{color:var(--green2)}.sc-val.r{color:var(--red2)}.sc-val.gold{color:var(--gold)}.sc-val.b{color:var(--blue2)}.sc-val.am{color:var(--amber2)}
+
+.main{display:flex;flex:1;overflow:hidden;height:calc(100vh - 52px - 42px)}
+.sidebar{width:200px;background:var(--bg2);border-right:1px solid var(--border);padding:10px 0;flex-shrink:0;overflow-y:auto}
+.sb-section{padding:8px 14px 4px;font-size:9px;color:var(--text3);letter-spacing:1.2px;text-transform:uppercase;font-weight:600}
+.sb-item{padding:8px 14px;font-size:12px;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:8px;border-left:3px solid transparent;transition:all .12s;user-select:none}
+.sb-item:hover{background:var(--bg3);color:var(--text)}
+.sb-item.active{background:var(--bg3);color:var(--gold);border-left-color:var(--gold)}
+.sb-badge{margin-left:auto;background:var(--red2);color:#fff;border-radius:10px;padding:1px 6px;font-size:9px;font-weight:700}
+
+.content{flex:1;padding:18px;overflow-y:auto;background:var(--bg)}
+.panel{display:none}.panel.active{display:block}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:10px}
+.ph-title{font-size:16px;font-weight:700;color:var(--text)}
+.ph-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r12);padding:16px;margin-bottom:12px}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.card-title{font-size:13px;font-weight:600;color:var(--text)}
+
+.btn{padding:6px 12px;border-radius:var(--r6);border:1px solid var(--border2);background:var(--bg3);font-size:11px;cursor:pointer;color:var(--text);transition:all .12s;white-space:nowrap;font-family:var(--font)}
+.btn:hover{background:var(--bg4);border-color:var(--text3)}
+.btn-xs{padding:2px 7px;font-size:10px}
+.btn-sm{padding:4px 9px;font-size:11px}
+.btn-primary{background:var(--blue);border-color:var(--blue2);color:#fff}.btn-primary:hover{background:var(--blue2)}
+.btn-gold{background:var(--gold);border-color:var(--gold2);color:var(--navy);font-weight:700}.btn-gold:hover{background:var(--gold2)}
+.btn-green{background:var(--green);border-color:var(--green2);color:#fff}.btn-green:hover{background:var(--green2)}
+.btn-danger{background:#2d0f0f;border-color:var(--red2);color:var(--red2)}.btn-danger:hover{background:#3d1515}
+.btn-amber{background:#2d1800;border-color:var(--amber2);color:var(--amber2)}.btn-amber:hover{background:#3d2000}
+.btn-purple{background:#1a0a40;border-color:#9d6bff;color:#b794ff}.btn-purple:hover{background:#221050}
+
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:14px;overflow-x:auto}
+.tab{padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer;color:var(--text3);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .12s;letter-spacing:.2px}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+.frow{margin-bottom:10px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.flabel{font-size:10px;color:var(--text2);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px;display:block}
+.finput{width:100%;padding:7px 10px;border:1px solid var(--border2);border-radius:var(--r6);font-size:12px;background:var(--bg);color:var(--text);transition:border .12s;font-family:var(--font)}
+.finput:focus{outline:none;border-color:var(--gold);background:var(--bg2)}
+.finput[readonly]{background:var(--bg3);color:var(--text2);cursor:not-allowed}
+select.finput option{background:var(--bg2)}
+
+.alert{padding:8px 12px;border-radius:var(--r6);margin-bottom:10px;font-size:11px;display:flex;align-items:flex-start;gap:8px;border-left:3px solid}
+.a-info{background:#0a1e33;border-color:var(--blue2);color:#7dd3fc}
+.a-warn{background:#1f1500;border-color:var(--amber2);color:var(--amber2)}
+.a-success{background:#051f14;border-color:var(--green);color:var(--green2)}
+.a-danger{background:#1f0505;border-color:var(--red2);color:#fca5a5}
+.a-gold{background:#1f1500;border-color:var(--gold);color:var(--gold2)}
+
+.tgrid-wrap{overflow-x:auto;border-radius:var(--r8);border:1px solid var(--border2)}
+.tgrid{width:100%;border-collapse:collapse;min-width:980px}
+.tgrid thead tr{background:var(--navy3)}
+.tgrid thead th{padding:9px 10px;font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);border-right:1px solid var(--border);white-space:nowrap;text-align:left}
+.tgrid thead th:last-child{border-right:none}
+.tgrid tbody tr{border-bottom:1px solid var(--border)}
+.tgrid tbody tr:last-child{border-bottom:none}
+.tgrid tbody td{padding:8px 10px;border-right:1px solid var(--border);color:var(--text);vertical-align:middle}
+.tgrid tbody td:last-child{border-right:none}
+.tgrid .th-sep,.tgrid .td-sep{border-right:2px solid var(--border2)!important}
+.tgrid tfoot td{background:var(--navy2);color:var(--gold);font-weight:700;padding:9px 10px;border-top:2px solid var(--gold);font-family:var(--mono);font-size:11px;border-right:1px solid var(--border)}
+.str td{background:var(--bg3)!important;border-bottom:1px solid var(--border)!important}
+.rc0{background:#0d1f35}.rc1{background:#0f1f18}.rc2{background:#1a1200}.rc3{background:#1a0d1f}
+.rc4{background:#0a1a2a}.rc5{background:#1f1000}.rc6{background:#0f1a0a}.rc7{background:#1a0a0a}
+.rc8{background:#0a1a1a}.rc9{background:#1a1500}
+.rb0{border-left:3px solid #3b82f6!important}.rb1{border-left:3px solid var(--green2)!important}
+.rb2{border-left:3px solid var(--gold)!important}.rb3{border-left:3px solid #c084fc!important}
+.rb4{border-left:3px solid #38bdf8!important}.rb5{border-left:3px solid #fb923c!important}
+.rb6{border-left:3px solid #4ade80!important}.rb7{border-left:3px solid #f87171!important}
+.rb8{border-left:3px solid #2dd4bf!important}.rb9{border-left:3px solid #facc15!important}
+
+.pgwrap{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;min-width:50px;margin-top:3px}
+.pgbar{height:100%;border-radius:2px;transition:width .3s}
+.pg-g{background:var(--green2)}.pg-a{background:var(--amber2)}.pg-r{background:var(--red2)}.pg-b{background:var(--blue2)}
+
+.sema{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;white-space:nowrap}
+.sema-g{background:#051f14;color:var(--green2);border:1px solid var(--green)}
+.sema-a{background:#1f1500;color:var(--amber2);border:1px solid var(--amber)}
+.sema-r{background:#1f0505;color:var(--red2);border:1px solid var(--red)}
+.sema-b{background:#0a1e33;color:#7dd3fc;border:1px solid var(--blue2)}
+.sema-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+
+.badge{display:inline-block;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;white-space:nowrap;letter-spacing:.2px}
+.bd-ok{background:#051f14;color:var(--green2);border:1px solid var(--green)}
+.bd-comp{background:#1f1500;color:var(--amber2);border:1px solid var(--amber)}
+.bd-prog{background:#0a1e33;color:#7dd3fc;border:1px solid var(--blue2)}
+.bd-none{background:var(--bg4);color:var(--text3);border:1px solid var(--border)}
+.bd-pend{background:#1f1100;color:var(--gold2);border:1px solid var(--gold)}
+.bd-anul{background:#1f0505;color:#fca5a5;border:1px solid var(--red)}
+.bd-amp{background:#1a0a40;color:#b794ff;border:1px solid #7c3aed}
+
+.amp-row{background:var(--bg4);border-left:3px solid #7c3aed!important}
+.amp-row td{padding:5px 10px!important;font-size:10px;color:var(--text3)}
+
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r12);padding:22px;width:580px;max-width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.7)}
+.modal-title{font-size:14px;font-weight:700;color:var(--text);padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
+
+.upzone{border:2px dashed var(--border2);border-radius:var(--r8);padding:12px;text-align:center;cursor:pointer;font-size:11px;color:var(--text3);margin-top:5px;transition:all .15s}
+.upzone:hover{border-color:var(--gold);color:var(--gold);background:var(--bg3)}
+.fchip{display:inline-flex;align-items:center;gap:4px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r4);padding:2px 8px;font-size:10px;color:var(--text2);margin:2px}
+
+.hitem{padding:7px 0;border-bottom:1px solid var(--border);display:flex;gap:10px}
+.hdot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.htext{font-size:11px;color:var(--text2);line-height:1.5}
+.htime{font-size:9px;color:var(--text3);margin-top:1px}
+
+.report-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r12);padding:20px;margin-bottom:12px}
+.rhead{background:var(--navy3);border-radius:var(--r8);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;border-left:4px solid var(--gold)}
+.rhead-title{font-size:15px;font-weight:700;color:var(--text)}
+.rhead-sub{font-size:10px;color:var(--text3);margin-top:3px}
+.rperiod{background:var(--gold);color:var(--navy);padding:4px 12px;border-radius:10px;font-size:11px;font-weight:700;white-space:nowrap}
+.rsec-title{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:10px;margin-top:14px}
+
+table.gt{width:100%;border-collapse:collapse;font-size:11px}
+table.gt th{padding:6px 9px;background:var(--bg3);color:var(--text3);font-weight:600;font-size:9px;text-transform:uppercase;letter-spacing:.5px;border:1px solid var(--border);text-align:left}
+table.gt td{padding:6px 9px;border:1px solid var(--border);color:var(--text);vertical-align:middle}
+table.gt tr:nth-child(even) td{background:var(--bg3)}
+table.gt tfoot td{background:var(--navy3);color:var(--gold);font-weight:700;font-family:var(--mono)}
+
+.cierre-box{border:1px solid;border-radius:var(--r12);padding:20px;text-align:center;margin-bottom:14px}
+.cg{border-color:var(--green);background:#051f14}.cr{border-color:var(--red2);background:#1f0505}
+.cierre-num{font-size:28px;font-weight:700;margin:8px 0;font-family:var(--mono)}
+
+.pend-item{background:var(--bg3);border:1px solid var(--border2);border-left:3px solid var(--gold);border-radius:var(--r8);padding:12px;margin-bottom:8px}
+.pend-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;color:var(--gold)}
+.pend-desc{font-size:12px;color:var(--text);margin-bottom:6px}
+.pend-meta{font-size:10px;color:var(--text3);margin-bottom:8px}
+.pend-actions{display:flex;gap:6px}
+
+@media print{
+  .sidebar,.topbar,.sumbar,.btn,.modal-overlay,.alert-banner,.toast-wrap,.ph .btn-wrap{display:none!important}
+  body{background:#fff;color:#000;font-size:11px}
+  .content{padding:0}.tgrid thead tr{background:#1a1a2a!important}
+  table.gt th{background:#eee!important;color:#333!important}
+  .rhead{background:#1a1a2a!important}
+  @page{margin:1.5cm;size:A4}
+}
+.empty{text-align:center;padding:40px;color:var(--text3);font-size:12px}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="login-box">
+    <div class="login-crest">
+      <div class="crest-shield">EA</div>
+      <div class="crest-text">
+        <div class="crest-unit">DGCICD</div>
+        <div class="crest-sub">Ejército Argentino · EF 2026</div>
+      </div>
+    </div>
+    <div class="login-title">Sistema de Gestión Presupuestaria</div>
+    <div class="login-date" id="ldate"></div>
+    <div id="ucards"></div>
+    <div class="pin-section" id="pin-sec">
+      <div class="pin-label" id="pin-lbl">Ingresá tu PIN</div>
+      <input type="password" class="pin-input" id="pin" maxlength="4" placeholder="••••" oninput="if(this.value.length===4)doLogin()">
+      <div class="pin-error" id="pin-err">PIN incorrecto. Intentá de nuevo.</div>
+    </div>
+  </div>
+</div>
+
+<div id="app" style="display:none;flex-direction:column">
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-shield">EA</div>
+      <div><div class="tb-title">Gestión Presupuestaria — DGCICD</div><div class="tb-sub">Ejército Argentino · EF 2026 · <span id="tb-date"></span></div></div>
+    </div>
+    <div class="tb-right">
+      <div class="online-pill" id="online-pill" style="display:none"><div class="online-dot"></div><span id="online-txt"></span></div>
+      <button class="btn btn-sm btn-green" onclick="window.print()" title="Imprimir">🖨 Imprimir</button>
+      <div class="user-pill"><div class="user-pip"></div><span id="cur-user"></span></div>
+      <button class="btn-out" onclick="logout()">Salir</button>
+    </div>
+  </div>
+
+  <div class="alert-banner ab-lock" id="ban-lock"><span>⚠</span><span id="ban-lock-txt">Edición en curso</span><span class="banner-close" onclick="closeBanner('ban-lock')">✕</span></div>
+  <div class="alert-banner ab-warn" id="ban-alert"><span>⚠</span><span id="ban-alert-txt"></span><span class="banner-close" onclick="closeBanner('ban-alert')">✕</span></div>
+  <div class="alert-banner ab-pend" id="ban-pend"><span>⏳</span><span id="ban-pend-txt"></span><span class="banner-close" onclick="closeBanner('ban-pend')">✕</span></div>
+
+  <div class="sumbar" id="sumbar"></div>
+
+  <div class="main">
+    <div class="sidebar">
+      <div class="sb-section">Presupuesto</div>
+      <div class="sb-item active" onclick="nav('p-tareas',this)">
+        <svg width="13" height="13" fill="currentColor" viewBox="0 0 16 16"><rect x="1" y="2" width="14" height="2" rx="1"/><rect x="1" y="7" width="14" height="2" rx="1"/><rect x="1" y="12" width="8" height="2" rx="1"/></svg>
+        Tareas
+      </div>
+      <div class="sb-item" onclick="nav('p-comprometer',this)">
+        <svg width="13" height="13" fill="currentColor" viewBox="0 0 16 16"><path d="M13 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1V3a1 1 0 00-1-1zM7 11L4 8l1.4-1.4L7 8.2l3.6-3.6L12 6z"/></svg>
+        Comprometer
+      </div>
+      <div class="sb-item" onclick="nav('p-devengar',this)">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2" stroke-linecap="round"/></svg>
+        Devengar
+      </div>
+      <div class="sb-item" onclick="nav('p-ampliaciones',this)">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v6M5 8h6" stroke-linecap="round"/></svg>
+        Ampliaciones
+      </div>
+      <div class="sb-item" onclick="nav('p-pendientes',this)" id="nav-pend">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 16 16"><path d="M8 2v4l3 2" stroke-linecap="round"/><circle cx="8" cy="8" r="6"/></svg>
+        Pendientes
+        <span class="sb-badge" id="pend-badge" style="display:none">0</span>
+      </div>
+      <div class="sb-section">Documentos</div>
+      <div class="sb-item" onclick="nav('p-documentos',this)">
+        <svg width="13" height="13" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1h6l4 4v9a1 1 0 01-1 1H3a1 1 0 01-1-1V2a1 1 0 011-1z"/></svg>
+        Documentación
+      </div>
+      <div class="sb-item" onclick="nav('p-historial',this)">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5" stroke-linecap="round"/></svg>
+        Historial
+      </div>
+      <div class="sb-section">Reportes</div>
+      <div class="sb-item" onclick="nav('p-reportes',this)">
+        <svg width="13" height="13" fill="currentColor" viewBox="0 0 16 16"><path d="M2 2h12v12H2zM4 5h8M4 8h8M4 11h5"/></svg>
+        Reportes
+      </div>
+      <div class="sb-section">Cierre</div>
+      <div class="sb-item" onclick="nav('p-cierre',this)">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 16 16"><path d="M2 8a6 6 0 0012 0M14 8l-2 2-2-2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Cierre Anual
+      </div>
+    </div>
+
+    <div class="content">
+      <div id="p-tareas" class="panel active">
+        <div class="ph">
+          <div><div class="ph-title">Tareas Presupuestarias</div><div class="ph-sub">Grilla de control con ampliaciones de crédito — EF 2026</div></div>
+          <button class="btn btn-primary btn-sm" onclick="openModalTarea()">+ Nueva tarea</button>
+        </div>
+        <div class="tabs">
+          <div class="tab active" onclick="ftab('todas',this)">Todas</div>
+          <div class="tab" onclick="ftab('inc2',this)">Inciso 2</div>
+          <div class="tab" onclick="ftab('inc3',this)">Inciso 3</div>
+          <div class="tab" onclick="ftab('inc4',this)">Inciso 4</div>
+          <div class="tab" onclick="ftab('inc5',this)">Inciso 5</div>
+          <div class="tab" onclick="ftab('inc6',this)">Inciso 6</div>
+          <div class="tab" onclick="ftab('ampliadas',this)">Con ampliaciones</div>
+        </div>
+        <div id="tlist"></div>
+      </div>
+
+      <div id="p-comprometer" class="panel">
+        <div class="ph"><div><div class="ph-title">Comprometer Crédito</div><div class="ph-sub">Registrar compromiso con acto administrativo</div></div></div>
+        <div class="alert a-info">Seleccioná tarea e inciso. El sistema validará contra el crédito vigente (original + ampliaciones aprobadas).</div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Nuevo compromiso</div></div>
+          <div class="frow"><label class="flabel">Tarea</label><select class="finput" id="c-tarea" onchange="updCompSubs()"></select></div>
+          <div class="frow"><label class="flabel">Subtarea (opcional)</label><select class="finput" id="c-sub"></select></div>
+          <div class="f3">
+            <div class="frow" style="margin:0"><label class="flabel">Inciso</label>
+              <select class="finput" id="c-inc">
+                <option value="2">I2 — Bs. consumo</option><option value="3">I3 — Servicios</option>
+                <option value="4">I4 — Bs. uso</option><option value="5">I5 — Transferencias</option><option value="6">I6 — Act. financieros</option>
+              </select>
+            </div>
+            <div class="frow" style="margin:0"><label class="flabel">Monto ($)</label><input class="finput" type="number" id="c-monto" placeholder="0"></div>
+            <div class="frow" style="margin:0"><label class="flabel">Fecha</label><input class="finput" type="date" id="c-fecha"></div>
+          </div>
+          <div class="frow"><label class="flabel">N° Acto Administrativo</label><input class="finput" type="text" id="c-acto" placeholder="NO-2026-XXXXX-APN-DGCICD#EA"></div>
+          <div class="frow"><label class="flabel">Descripción</label><input class="finput" type="text" id="c-desc" placeholder="Descripción del compromiso"></div>
+          <div class="frow">
+            <label class="flabel">Crédito vigente disponible</label>
+            <div id="c-credito-info" class="alert a-info" style="margin:0;font-family:var(--mono)">Seleccioná tarea e inciso</div>
+          </div>
+          <div style="text-align:right"><button class="btn btn-gold" onclick="regComp()">✔ Registrar compromiso</button></div>
+        </div>
+        <div id="comp-msg"></div>
+      </div>
+
+      <div id="p-devengar" class="panel">
+        <div class="ph"><div><div class="ph-title">Devengar Crédito</div><div class="ph-sub">Certificar ejecución y devengar el compromiso registrado</div></div></div>
+        <div class="alert a-info">Solo se puede devengar sobre compromisos activos con saldo disponible.</div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Registrar devengado</div></div>
+          <div class="frow"><label class="flabel">Compromiso a devengar</label><select class="finput" id="d-comp"></select></div>
+          <div class="f3">
+            <div class="frow" style="margin:0"><label class="flabel">Monto ($)</label><input class="finput" type="number" id="d-monto" placeholder="0"></div>
+            <div class="frow" style="margin:0"><label class="flabel">Fecha</label><input class="finput" type="date" id="d-fecha"></div>
+            <div class="frow" style="margin:0"><label class="flabel">N° Certificado/Factura</label><input class="finput" type="text" id="d-cert" placeholder="Nro."></div>
+          </div>
+          <div class="frow"><label class="flabel">Observaciones</label><input class="finput" type="text" id="d-obs" placeholder="Descripción del devengado"></div>
+          <div style="text-align:right"><button class="btn btn-gold" onclick="regDev()">✔ Registrar devengado</button></div>
+        </div>
+        <div id="dev-msg"></div>
+      </div>
+
+      <div id="p-ampliaciones" class="panel">
+        <div class="ph"><div><div class="ph-title">Ampliaciones de Crédito</div><div class="ph-sub">Refuerzo externo (acto administrativo) o reasignación interna entre tareas</div></div></div>
+        <div class="alert a-gold">El crédito vigente se actualiza al registrar la ampliación.</div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Registrar ampliación</div></div>
+          <div class="f2">
+            <div class="frow" style="margin:0"><label class="flabel">Tipo de ampliación</label>
+              <select class="finput" id="amp-tipo" onchange="toggleAmpTipo()">
+                <option value="externo">Refuerzo externo (acto administrativo)</option>
+                <option value="reasignacion">Reasignación interna (desde otra tarea)</option>
+              </select>
+            </div>
+            <div class="frow" style="margin:0"><label class="flabel">Tarea destino</label><select class="finput" id="amp-tarea"></select></div>
+          </div>
+          <div class="f2">
+            <div class="frow" style="margin:0"><label class="flabel">Inciso</label>
+              <select class="finput" id="amp-inc">
+                <option value="2">I2 — Bs. consumo</option><option value="3">I3 — Servicios</option>
+                <option value="4">I4 — Bs. uso</option><option value="5">I5 — Transferencias</option><option value="6">I6 — Act. financieros</option>
+              </select>
+            </div>
+            <div class="frow" style="margin:0"><label class="flabel">Monto de ampliación ($)</label><input class="finput" type="number" id="amp-monto" placeholder="0"></div>
+          </div>
+          <div id="amp-origen-ext">
+            <div class="f2">
+              <div class="frow" style="margin:0"><label class="flabel">Acto administrativo origen</label><input class="finput" type="text" id="amp-acto" placeholder="Resolución / NO / Decreto"></div>
+              <div class="frow" style="margin:0"><label class="flabel">Fecha</label><input class="finput" type="date" id="amp-fecha"></div>
+            </div>
+          </div>
+          <div id="amp-origen-reas" style="display:none">
+            <div class="f2">
+              <div class="frow" style="margin:0"><label class="flabel">Tarea origen (descuento)</label><select class="finput" id="amp-tarea-origen"></select></div>
+              <div class="frow" style="margin:0"><label class="flabel">Fecha</label><input class="finput" type="date" id="amp-fecha2"></div>
+            </div>
+            <div class="alert a-warn" style="margin-top:8px">El monto se descontará del crédito de la tarea origen.</div>
+          </div>
+          <div class="frow"><label class="flabel">Justificación / motivo</label><input class="finput" type="text" id="amp-motivo" placeholder="Justificación de la ampliación"></div>
+          <div style="text-align:right"><button class="btn btn-purple" onclick="regAmp()">↑ Registrar ampliación</button></div>
+        </div>
+        <div id="amp-msg"></div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Historial de ampliaciones</div></div>
+          <div id="amp-hist"></div>
+        </div>
+      </div>
+
+      <div id="p-pendientes" class="panel">
+        <div class="ph"><div><div class="ph-title">Aprobaciones Pendientes</div><div class="ph-sub">Correcciones y anulaciones que requieren aprobación del TC</div></div></div>
+        <div id="pend-list"><div class="empty">Sin pendientes</div></div>
+      </div>
+
+      <div id="p-documentos" class="panel">
+        <div class="ph"><div><div class="ph-title">Documentación de Respaldo</div><div class="ph-sub">Archivos adjuntos a compromisos, devengados y ampliaciones</div></div></div>
+        <div class="tabs">
+          <div class="tab active" onclick="fdoctab('todas',this)">Todas</div>
+          <div class="tab" onclick="fdoctab('comp',this)">Compromisos</div>
+          <div class="tab" onclick="fdoctab('dev',this)">Devengados</div>
+          <div class="tab" onclick="fdoctab('amp',this)">Ampliaciones</div>
+        </div>
+        <div id="docs-list"></div>
+      </div>
+
+      <div id="p-historial" class="panel">
+        <div class="ph"><div><div class="ph-title">Historial de Movimientos</div><div class="ph-sub">Registro cronológico</div></div></div>
+        <div class="card"><div id="hcont"><div class="empty">Sin movimientos</div></div></div>
+      </div>
+
+      <div id="p-reportes" class="panel">
+        <div class="ph"><div><div class="ph-title">Reportes de Ejecución</div><div class="ph-sub">Trimestrales y semestrales</div></div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+          <div class="card">
+            <div class="card-head"><div class="card-title">Reportes Trimestrales</div></div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <button class="btn btn-primary" onclick="genReport('T1')">📄 1° Trimestre</button>
+              <button class="btn btn-primary" onclick="genReport('T2')">📄 2° Trimestre</button>
+              <button class="btn btn-primary" onclick="genReport('T3')">📄 3° Trimestre</button>
+              <button class="btn btn-primary" onclick="genReport('T4')">📄 4° Trimestre</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-title">Reportes Semestrales</div></div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <button class="btn btn-primary" onclick="genReport('S1')">📄 1° Semestre</button>
+              <button class="btn btn-primary" onclick="genReport('S2')">📄 2° Semestre</button>
+            </div>
+          </div>
+        </div>
+        <div id="rpreview" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">Vista previa</div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-green btn-sm" onclick="window.print()">🖨 Imprimir</button>
+              <button class="btn btn-sm" onclick="document.getElementById('rpreview').style.display='none'">✕ Cerrar</button>
+            </div>
+          </div>
+          <div id="rcontent"></div>
+        </div>
+      </div>
+
+      <div id="p-cierre" class="panel">
+        <div class="ph"><div><div class="ph-title">Cierre Anual — EF 2026</div><div class="ph-sub">El ejercicio cierra en cero pesos.</div></div></div>
+        <div id="cierre-content"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toasts"></div>
+
+<div class="modal-overlay" id="m-tarea">
+  <div class="modal">
+    <div class="modal-title" id="m-tarea-title">🗂 Nueva Tarea</div>
+    <div class="frow"><label class="flabel">Descripción</label><input class="finput" type="text" id="t-desc" placeholder="Denominación completa"></div>
+    <div class="f3">
+      <div class="frow" style="margin:0"><label class="flabel">Programa</label><input class="finput" type="text" id="t-prog" placeholder="Ej: 16"></div>
+      <div class="frow" style="margin:0"><label class="flabel">Actividad</label><input class="finput" type="text" id="t-act" placeholder="Ej: 12"></div>
+      <div class="frow" style="margin:0"><label class="flabel">Ref/BAPIN</label><input class="finput" type="text" id="t-ref" placeholder="Nro."></div>
+    </div>
+    <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin:12px 0 8px;border-top:1px solid var(--border);padding-top:10px">Crédito inicial por inciso ($)</div>
+    <div class="f2">
+      <div class="frow" style="margin:0"><label class="flabel">Inciso 2 — Bs. consumo</label><input class="finput" type="number" id="t-i2" placeholder="0"></div>
+      <div class="frow" style="margin:0"><label class="flabel">Inciso 3 — Servicios</label><input class="finput" type="number" id="t-i3" placeholder="0"></div>
+    </div>
+    <div class="f2">
+      <div class="frow" style="margin:0"><label class="flabel">Inciso 4 — Bs. uso</label><input class="finput" type="number" id="t-i4" placeholder="0"></div>
+      <div class="frow" style="margin:0"><label class="flabel">Inciso 5 — Transferencias</label><input class="finput" type="number" id="t-i5" placeholder="0"></div>
+    </div>
+    <div class="frow"><label class="flabel">Inciso 6 — Activos financieros</label><input class="finput" type="number" id="t-i6" placeholder="0"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('m-tarea')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveTarea()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="m-sub">
+  <div class="modal">
+    <div class="modal-title" id="m-sub-title">➕ Nueva Subtarea</div>
+    <div class="alert a-info" id="m-sub-parent"></div>
+    <div class="frow"><label class="flabel">Descripción</label><input class="finput" type="text" id="st-desc" placeholder="Descripción"></div>
+    <div class="f3">
+      <div class="frow" style="margin:0"><label class="flabel">Inciso</label>
+        <select class="finput" id="st-inc">
+          <option value="2">I2</option><option value="3">I3</option><option value="4">I4</option><option value="5">I5</option><option value="6">I6</option>
+        </select>
+      </div>
+      <div class="frow" style="margin:0"><label class="flabel">Crédito ($)</label><input class="finput" type="number" id="st-cred" placeholder="0"></div>
+      <div class="frow" style="margin:0"><label class="flabel">Ref</label><input class="finput" type="text" id="st-ref" placeholder="—"></div>
+    </div>
+    <div class="frow"><label class="flabel">Observaciones</label><input class="finput" type="text" id="st-obs" placeholder="—"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('m-sub')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveSub()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_URL = 'http://localhost:3000/api';
+const INCN = {2:'Bienes de consumo',3:'Servicios no personales',4:'Bienes de uso',5:'Transferencias',6:'Activos financieros'};
+const PERIODS = {
+  T1:{label:'1° Trimestre',months:[1,2,3],range:'Enero – Marzo 2026'},
+  T2:{label:'2° Trimestre',months:[4,5,6],range:'Abril – Junio 2026'},
+  T3:{label:'3° Trimestre',months:[7,8,9],range:'Julio – Septiembre 2026'},
+  T4:{label:'4° Trimestre',months:[10,11,12],range:'Octubre – Diciembre 2026'},
+  S1:{label:'1° Semestre',months:[1,2,3,4,5,6],range:'Enero – Junio 2026'},
+  S2:{label:'2° Semestre',months:[7,8,9,10,11,12],range:'Julio – Diciembre 2026'}
+};
+const RC_BG = ['rc0','rc1','rc2','rc3','rc4','rc5','rc6','rc7','rc8','rc9'];
+const RC_BD = ['rb0','rb1','rb2','rb3','rb4','rb5','rb6','rb7','rb8','rb9'];
+
+let CU = null, PU = null;
+let S = {tareas:[],compromisos:[],devengados:[],ampliaciones:[],pendientes:[],historial:[],archivos:[]};
+let tabF = 'todas', docTabF = 'todas';
+let editTId = null, subParentId = null;
+let expandedTareas = new Set();
+let pollTimer = null;
+
+const fm = n => new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(n||0);
+const uid = () => Date.now().toString(36) + Math.random().toString(36).substr(2,5);
+const today = () => new Date().toISOString().split('T')[0];
+const mon = s => s ? parseInt(s.split('-')[1]) : 0;
+const now = () => new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+const dateStr = () => new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+const pc = (v,t) => t ? Math.min(Math.round(v/t*100),100) : 0;
+const pgcls = p => p>80?'pg-r':p>60?'pg-a':'pg-g';
+const fmtQ = m => {for(const k in PERIODS){if(PERIODS[k].months.includes(m))return PERIODS[k].label;}return 'Sin trimestre';};
+
+function getTotalOrig(t){return(t.i2||0)+(t.i3||0)+(t.i4||0)+(t.i5||0)+(t.i6||0)}
+function getAmpAprobadas(tid){return S.ampliaciones.filter(a=>a.tareaId===tid&&a.estado==='aprobada')}
+function getCreditoVigente(t){const orig=getTotalOrig(t);const amps=getAmpAprobadas(t.id).reduce((s,a)=>s+a.monto,0);return orig+amps;}
+function getCreditoVigenteInc(t,inc){const orig=t['i'+inc]||0;const amps=getAmpAprobadas(t.id).filter(a=>a.inciso==inc).reduce((s,a)=>s+a.monto,0);return orig+amps;}
+function getComp(tid){return S.compromisos.filter(c=>c.tareaId===tid&&c.estado!=='anulado').reduce((s,c)=>s+c.monto,0)}
+function getDev(tid){return S.devengados.filter(d=>d.tareaId===tid&&d.estado!=='anulado').reduce((s,d)=>s+d.monto,0)}
+function getSaldo(t){return getCreditoVigente(t)-getComp(t.id)}
+function pendCount(){return S.pendientes.filter(p=>p.estado==='pendiente').length}
+
+async function api(endpoint,method='GET',body=null){
+  const opts = {method,headers:{'Content-Type':'application/json'}};
+  if(body) opts.body = JSON.stringify(body);
+  const r = await fetch(API_URL+endpoint,opts);
+  return r.json();
+}
+
+async function loadData(){
+  const data = await api('/estado');
+  S = data.state;
+}
+
+async function initLogin(){
+  document.getElementById('ldate').textContent = dateStr();
+  const users = await api('/usuarios');
+  document.getElementById('ucards').innerHTML = users.map(u=>`
+    <div class="ucard" onclick="selUser('${u.id}')" id="uc-${u.id}">
+      <div class="uavatar" style="background:${u.color}22;color:${u.color};border:1.5px solid ${u.color}40">${u.ini}</div>
+      <div><div class="uname">${u.name}</div><div class="urole">${u.role}</div></div>
+    </div>`).join('');
+}
+
+function selUser(uid){
+  document.querySelectorAll('.ucard').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('uc-'+uid).classList.add('selected');
+  PU = CU || {id:uid};
+  const ps = document.getElementById('pin-sec');
+  ps.style.display = 'block';
+  document.getElementById('pin-lbl').textContent = 'PIN';
+  document.getElementById('pin').value = '';
+  document.getElementById('pin-err').style.display = 'none';
+  setTimeout(()=>document.getElementById('pin').focus(),100);
+}
+
+async function doLogin(){
+  if(!PU)return;
+  const pin = document.getElementById('pin').value;
+  const users = await api('/usuarios');
+  const user = users.find(u=>u.id===PU.id);
+  if(user && user.pin === pin){
+    CU = user;
+    launch();
+  }else{
+    document.getElementById('pin-err').style.display = 'block';
+    document.getElementById('pin').value = '';
+  }
+}
+
+async function launch(){
+  await loadData();
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  document.getElementById('cur-user').textContent = CU.name;
+  document.getElementById('tb-date').textContent = dateStr();
+  document.getElementById('c-fecha').value = today();
+  document.getElementById('d-fecha').value = today();
+  document.getElementById('amp-fecha').value = today();
+  document.getElementById('amp-fecha2').value = today();
+  renderAll();
+  startPolling();
+  toast('Bienvenido',CU.name,'');
+}
+
+function startPolling(){
+  pollTimer = setInterval(async()=>{
+    await loadData();
+    renderAll();
+  },5000);
+}
+
+function logout(){
+  clearInterval(pollTimer);
+  CU = null;
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login').style.display = 'flex';
+  document.getElementById('pin-sec').style.display = 'none';
+}
+
+function toast(title,body,type=''){
+  const wrap = document.getElementById('toasts');
+  const el = document.createElement('div');
+  el.className = 'toast ' + (type||'');
+  el.innerHTML = `<div class="toast-title">${title}</div><div class="toast-body">${body}</div>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{el.style.opacity='0';setTimeout(()=>el.remove(),300);},4000);
+}
+
+function nav(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(el)el.classList.add('active');
+  if(id==='p-comprometer')fillCompSelects();
+  if(id==='p-devengar')fillDevSelect();
+  if(id==='p-ampliaciones'){fillAmpSelects();renderAmpHist();}
+  if(id==='p-pendientes')renderPendientes();
+  if(id==='p-documentos')renderDocs();
+  if(id==='p-historial')renderHist();
+  if(id==='p-cierre')renderCierre();
+}
+
+function ftab(f,el){
+  tabF = f;
+  document.querySelectorAll('#p-tareas .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderTareas();
+}
+
+function fdoctab(f,el){
+  docTabF = f;
+  document.querySelectorAll('#p-documentos .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderDocs();
+}
+
+function renderAll(){renderSumbar();renderTareas();updatePendBadge();}
+
+function renderSumbar(){
+  const cred = S.tareas.reduce((s,t)=>s+getCreditoVigente(t),0);
+  const orig = S.tareas.reduce((s,t)=>s+getTotalOrig(t),0);
+  const comp = S.compromisos.filter(c=>c.estado!=='anulado').reduce((s,c)=>s+c.monto,0);
+  const dev = S.devengados.filter(d=>d.estado!=='anulado').reduce((s,d)=>s+d.monto,0);
+  const saldo = cred - comp;
+  const pct = cred ? Math.round(dev/cred*100) : 0;
+  document.getElementById('sumbar').innerHTML = `
+    <div class="scard"><div class="sc-label">Crédito vigente</div><div class="sc-val">${fm(cred)}</div></div>
+    <div class="scard"><div class="sc-label">Ampliado</div><div class="sc-val am">${fm(cred-orig)}</div></div>
+    <div class="scard"><div class="sc-label">Comprometido</div><div class="sc-val gold">${fm(comp)}</div></div>
+    <div class="scard"><div class="sc-label">Devengado</div><div class="sc-val g">${fm(dev)}</div></div>
+    <div class="scard"><div class="sc-label">Saldo disponible</div><div class="sc-val ${saldo<0?'r':''}">${fm(saldo)}</div></div>
+    <div class="scard"><div class="sc-label">Ejecución</div><div class="sc-val ${pct>80?'g':pct>40?'am':'r'}">${pct}%</div></div>`;
+}
+
+function semaforo(t){
+  const vig = getCreditoVigente(t), comp = getComp(t.id), dev = getDev(t.id);
+  if(!vig) return '<span class="sema sema-b"><span class="sema-dot"></span>Sin crédito</span>';
+  const pDev = pc(dev,vig), pComp = pc(comp,vig);
+  if(dev>=vig) return '<span class="sema sema-g"><span class="sema-dot"></span>Devengado ✓</span>';
+  if(pDev>=80) return '<span class="sema sema-r"><span class="sema-dot"></span>80%+ devengado</span>';
+  if(pComp>=100) return '<span class="sema sema-r"><span class="sema-dot"></span>Comprometido 100%</span>';
+  if(comp>0) return '<span class="sema sema-a"><span class="sema-dot"></span>En ejecución</span>';
+  return '<span class="sema sema-b"><span class="sema-dot"></span>Sin movimiento</span>';
+}
+
+function renderTareas(){
+  let ts = S.tareas;
+  if(tabF!=='todas'&&tabF!=='ampliadas'){
+    const inc = parseInt(tabF.replace('inc',''));
+    ts = ts.filter(t=>getCreditoVigenteInc(t,inc)>0);
+  }
+  if(tabF==='ampliadas') ts = ts.filter(t=>getAmpAprobadas(t.id).length>0);
+  if(!ts.length){document.getElementById('tlist').innerHTML='<div class="empty">Sin tareas</div>';return;}
+
+  const totVig = ts.reduce((s,t)=>s+getCreditoVigente(t),0);
+  const totComp = ts.reduce((s,t)=>s+getComp(t.id),0);
+  const totDev = ts.reduce((s,t)=>s+getDev(t.id),0);
+  const totSaldo = totVig - totComp;
+
+  let rows = '';
+  ts.forEach((t,idx)=>{
+    const vig = getCreditoVigente(t), orig = getTotalOrig(t), comp = getComp(t.id), dev = getDev(t.id), saldo = vig - comp;
+    const pC = pc(comp,vig), pD = pc(dev,vig);
+    const amps = getAmpAprobadas(t.id);
+    const incs = [2,3,4,5,6].filter(i=>getCreditoVigenteInc(t,i)>0).map(i=>`I${i}`).join(' ');
+    const bg = RC_BG[idx%10], bd = RC_BD[idx%10];
+    const isExp = expandedTareas.has(t.id);
+
+    rows += `<tr class="${bg}">
+      <td class="${bd}" style="font-weight:700;text-align:center;font-size:11px">${idx+1}</td>
+      <td class="td-sep" style="font-size:10px;color:var(--text3)">${t.prog}/${t.act}</td>
+      <td style="min-width:180px">
+        <div style="font-weight:600;font-size:11px">${t.desc}</div>
+        ${t.ref&&t.ref!='—'?`<div style="font-size:9px;color:var(--text3)">Ref: ${t.ref}</div>`:''}
+        ${amps.length?`<span class="badge bd-amp" style="margin-top:3px">+${amps.length}</span>`:''}
+      </td>
+      <td class="td-sep" style="font-size:10px;color:var(--text3)">${incs||'—'}</td>
+      <td style="text-align:right">
+        <div style="font-weight:700;font-family:var(--mono);font-size:11px">${fm(vig)}</div>
+        ${vig>orig?`<div style="font-size:9px;color:#b794ff">orig: ${fm(orig)}</div>`:''}
+      </td>
+      <td style="text-align:right">
+        <div style="color:var(--amber2);font-weight:600;font-family:var(--mono);font-size:11px">${fm(comp)}</div>
+        <div class="pgwrap"><div class="pgbar pg-a" style="width:${pC}%"></div></div>
+      </td>
+      <td class="td-sep" style="text-align:right">
+        <div style="color:var(--green2);font-weight:600;font-family:var(--mono);font-size:11px">${fm(dev)}</div>
+        <div class="pgwrap"><div class="pgbar ${pgcls(pD)}" style="width:${pD}%"></div></div>
+      </td>
+      <td style="text-align:right;font-weight:700;font-family:var(--mono);font-size:11px;color:${saldo<0?'var(--red2)':'var(--text)'}">${fm(saldo)}</td>
+      <td class="td-sep">${semaforo(t)}</td>
+      <td>
+        <div style="display:flex;gap:3px;flex-wrap:wrap">
+          <button class="btn btn-xs" onclick="editTarea('${t.id}')">✏️</button>
+          <button class="btn btn-xs btn-primary" onclick="openSub('${t.id}')">＋Sub</button>
+          ${amps.length?`<button class="btn btn-xs btn-purple" onclick="toggleExp('${t.id}')">${isExp?'▲':'▼'}</button>`:''}
+          <button class="btn btn-xs btn-danger" onclick="delTarea('${t.id}')">✕</button>
+        </div>
+      </td>
+    </tr>`;
+
+    if(isExp){
+      amps.forEach(a=>{
+        rows += `<tr class="amp-row">
+          <td colspan="2" style="color:#b794ff;padding-left:18px!important">↳ AMP</td>
+          <td colspan="2" style="font-size:10px">${a.tipo==='externo'?'Refuerzo':'Reasign.'} — ${a.motivo||'—'}</td>
+          <td style="text-align:right;font-family:var(--mono);color:#b794ff">+${fm(a.monto)}</td>
+          <td colspan="5" style="font-size:9px;color:var(--text3)">I${a.inciso} · ${a.fecha}</td>
+        </tr>`;
+      });
+    }
+
+    (t.subtareas||[]).forEach(st=>{
+      const stComp = S.compromisos.filter(c=>c.subtareaId===st.id&&c.estado!=='anulado').reduce((s,c)=>s+c.monto,0);
+      const stDev = S.devengados.filter(d=>d.subtareaId===st.id&&d.estado!=='anulado').reduce((s,d)=>s+d.monto,0);
+      rows += `<tr class="str ${bg}">
+        <td style="text-align:center;color:var(--text3)">↳</td>
+        <td class="td-sep" style="font-size:10px;color:var(--text3)">I${st.inciso}</td>
+        <td colspan="2" style="font-size:11px;padding-left:20px!important">⤷ ${st.desc}</td>
+        <td style="text-align:right;font-family:var(--mono);font-size:11px">${fm(st.credito||0)}</td>
+        <td style="text-align:right;color:var(--amber2);font-family:var(--mono);font-size:11px">${fm(stComp)}</td>
+        <td class="td-sep" style="text-align:right;color:var(--green2);font-family:var(--mono);font-size:11px">${fm(stDev)}</td>
+        <td style="text-align:right;font-family:var(--mono);font-size:11px">${fm((st.credito||0)-stComp)}</td>
+        <td class="td-sep"></td>
+        <td>
+          <div style="display:flex;gap:3px">
+            <button class="btn btn-xs btn-amber" onclick="editSub('${t.id}','${st.id}')">✏️</button>
+            <button class="btn btn-xs btn-danger" onclick="delSub('${t.id}','${st.id}')">✕</button>
+          </div>
+        </td>
+      </tr>`;
+    });
+  });
+
+  document.getElementById('tlist').innerHTML = `
+    <div class="tgrid-wrap">
+      <table class="tgrid">
+        <thead><tr>
+          <th style="width:28px">#</th><th class="th-sep">Prog</th><th>Descripción</th>
+          <th class="th-sep">Inc.</th><th style="text-align:right">Crédito</th>
+          <th style="text-align:right">Comp.</th><th class="th-sep" style="text-align:right">Dev.</th>
+          <th style="text-align:right">Saldo</th><th class="th-sep">Estado</th><th>Acciones</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr>
+          <td colspan="4">TOTAL</td>
+          <td style="text-align:right">${fm(totVig)}</td>
+          <td style="text-align:right;color:var(--gold2)">${fm(totComp)}</td>
+          <td style="text-align:right;color:var(--green2)">${fm(totDev)}</td>
+          <td style="text-align:right;color:${totSaldo<0?'var(--red2)':'var(--gold)'}">${fm(totSaldo)}</td>
+          <td colspan="2"></td>
+        </tr></tfoot>
+      </table>
+    </div>`;
+}
+
+function toggleExp(tid){
+  if(expandedTareas.has(tid))expandedTareas.delete(tid);else expandedTareas.add(tid);
+  renderTareas();
+}
+
+function openModalTarea(){
+  editTId = null;
+  document.getElementById('m-tarea-title').textContent = '🗂 Nueva Tarea';
+  ['t-desc','t-prog','t-act','t-ref','t-i2','t-i3','t-i4','t-i5','t-i6'].forEach(id=>document.getElementById(id).value='');
+  openModal('m-tarea');
+}
+
+function editTarea(id){
+  editTId = id;
+  const t = S.tareas.find(x=>x.id===id);
+  if(!t)return;
+  document.getElementById('m-tarea-title').textContent = '✏️ Editar Tarea';
+  document.getElementById('t-desc').value = t.desc||'';
+  document.getElementById('t-prog').value = t.prog||'';
+  document.getElementById('t-act').value = t.act||'';
+  document.getElementById('t-ref').value = t.ref||'';
+  document.getElementById('t-i2').value = t.i2||0;
+  document.getElementById('t-i3').value = t.i3||0;
+  document.getElementById('t-i4').value = t.i4||0;
+  document.getElementById('t-i5').value = t.i5||0;
+  document.getElementById('t-i6').value = t.i6||0;
+  openModal('m-tarea');
+}
+
+async function saveTarea(){
+  const desc = document.getElementById('t-desc').value.trim();
+  if(!desc){alert('Ingresá descripción');return;}
+  const d = {
+    desc,
+    prog: document.getElementById('t-prog').value.trim()||'—',
+    act: document.getElementById('t-act').value.trim()||'—',
+    ref: document.getElementById('t-ref').value.trim()||'—',
+    i2: +document.getElementById('t-i2').value||0,
+    i3: +document.getElementById('t-i3').value||0,
+    i4: +document.getElementById('t-i4').value||0,
+    i5: +document.getElementById('t-i5').value||0,
+    i6: +document.getElementById('t-i6').value||0,
+    creadoPor: CU.name
+  };
+  if(editTId){
+    await api('/tareas/'+editTId,'PUT',d);
+    toast('Tarea editada',desc,'');
+  }else{
+    await api('/tareas','POST',d);
+    toast('Tarea creada',desc,'');
+  }
+  closeModal('m-tarea');
+  await loadData();
+  renderAll();
+  fillCompSelects();
+}
+
+async function delTarea(id){
+  const t = S.tareas.find(x=>x.id===id);
+  if(!confirm(`Eliminar "${t?t.desc.substring(0,60):'?'}"?`))return;
+  await api('/tareas/'+id,'DELETE',{user:CU.name});
+  toast('Tarea eliminada','','err');
+  await loadData();
+  renderAll();
+}
+
+let editSubId = null;
+function openSub(pid){
+  subParentId = pid;
+  editSubId = null;
+  const t = S.tareas.find(x=>x.id===pid);
+  document.getElementById('m-sub-title').textContent = '➕ Nueva Subtarea';
+  document.getElementById('m-sub-parent').textContent = 'Tarea: ' + (t?t.desc.substring(0,70):'?');
+  ['st-desc','st-ref','st-obs','st-cred'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('st-inc').value = '2';
+  openModal('m-sub');
+}
+function editSub(tid,stid){
+  subParentId = tid;
+  editSubId = stid;
+  const t = S.tareas.find(x=>x.id===tid);
+  const st = t?.subtareas.find(x=>x.id===stid);
+  if(!st)return;
+  document.getElementById('m-sub-title').textContent = '✏️ Editar Subtarea';
+  document.getElementById('m-sub-parent').textContent = 'Tarea: ' + t.desc.substring(0,70);
+  document.getElementById('st-desc').value = st.desc||'';
+  document.getElementById('st-inc').value = st.inciso||'2';
+  document.getElementById('st-cred').value = st.credito||0;
+  document.getElementById('st-ref').value = st.ref||'';
+  document.getElementById('st-obs').value = st.obs||'';
+  openModal('m-sub');
+}
+async function saveSub(){
+  const desc = document.getElementById('st-desc').value.trim();
+  if(!desc){alert('Ingresá descripción');return;}
+  const data = {
+    desc,
+    inciso: +document.getElementById('st-inc').value,
+    credito: +document.getElementById('st-cred').value||0,
+    ref: document.getElementById('st-ref').value,
+    obs: document.getElementById('st-obs').value,
+    creadoPor: CU.name
+  };
+  if(editSubId){
+    await api('/tareas/'+subParentId+'/subtareas/'+editSubId,'PUT',{...data,modificadoPor:CU.name});
+  }else{
+    await api('/tareas/'+subParentId+'/subtareas','POST',data);
+  }
+  closeModal('m-sub');
+  await loadData();
+  renderAll();
+}
+async function delSub(tid,stid){
+  if(!confirm('Eliminar subtarea?'))return;
+  await api('/tareas/'+tid+'/subtareas/'+stid,'DELETE',{user:CU.name});
+  await loadData();
+  renderAll();
+}
+
+function fillCompSelects(){
+  document.getElementById('c-tarea').innerHTML = S.tareas.map(t=>`<option value="${t.id}">${t.desc.substring(0,70)}</option>`).join('');
+  updCompSubs();
+}
+function updCompSubs(){
+  const tid = document.getElementById('c-tarea').value;
+  const t = S.tareas.find(x=>x.id===tid);
+  const subs = t?.subtareas||[];
+  document.getElementById('c-sub').innerHTML = '<option value="">— Sin subtarea —</option>' + subs.map(st=>`<option value="${st.id}">↳ ${st.desc.substring(0,60)}</option>`).join('');
+  updCompInfo();
+}
+function updCompInfo(){
+  const tid = document.getElementById('c-tarea').value;
+  const inc = +document.getElementById('c-inc').value;
+  const t = S.tareas.find(x=>x.id===tid);
+  if(!t){document.getElementById('c-credito-info').textContent='Seleccioná tarea';return;}
+  const vig = getCreditoVigenteInc(t,inc);
+  const comp = S.compromisos.filter(c=>c.tareaId===tid&&c.inciso==inc&&c.estado!=='anulado').reduce((s,c)=>s+c.monto,0);
+  const disp = vig - comp;
+  document.getElementById('c-credito-info').innerHTML = `Crédito I${inc}: <b>${fm(vig)}</b> · Comp: <b>${fm(comp)}</b> · <b style="color:${disp<0?'var(--red2)':'var(--green2)'}">Disp: ${fm(disp)}</b>`;
+}
+document.addEventListener('change',e=>{if(e.target.id==='c-inc'||e.target.id==='c-tarea')updCompInfo();});
+
+async function regComp(){
+  const tid = document.getElementById('c-tarea').value;
+  const sid = document.getElementById('c-sub').value||null;
+  const inc = +document.getElementById('c-inc').value;
+  const monto = +document.getElementById('c-monto').value||0;
+  const fecha = document.getElementById('c-fecha').value||today();
+  const acto = document.getElementById('c-acto').value.trim();
+  const desc = document.getElementById('c-desc').value.trim();
+  const msg = document.getElementById('comp-msg');
+  if(!tid||monto<=0){msg.innerHTML='<div class="alert a-danger">Completá tarea y monto</div>';return;}
+  const t = S.tareas.find(x=>x.id===tid);
+  const vig = getCreditoVigenteInc(t,inc);
+  const comp = S.compromisos.filter(c=>c.tareaId===tid&&c.inciso==inc&&c.estado!=='anulado').reduce((s,c)=>s+c.monto,0);
+  const disp = vig - comp;
+  if(monto>disp+1){msg.innerHTML=`<div class="alert a-danger">Monto > saldo: ${fm(disp)}</div>`;return;}
+  const r = await api('/compromisos','POST',{tareaId:tid,subtareaId:sid,inciso:inc,monto,fecha,acto,desc,creadoPor:CU.name});
+  if(r.error){msg.innerHTML=`<div class="alert a-danger">${r.error}</div>`;return;}
+  ['c-monto','c-acto','c-desc'].forEach(id=>document.getElementById(id).value='');
+  msg.innerHTML = `<div class="alert a-success">✅ Compromiso: ${fm(monto)}</div>`;
+  toast('Compromiso registrado',fm(monto),'');
+  await loadData();
+  renderAll();
+  fillDevSelect();
+  setTimeout(()=>msg.innerHTML='',5000);
+}
+
+function fillDevSelect(){
+  const comps = S.compromisos.filter(c=>{
+    if(c.estado==='anulado')return false;
+    const dev = S.devengados.filter(d=>d.compromisoId===c.id&&d.estado!=='anulado').reduce((s,d)=>s+d.monto,0);
+    return c.monto>dev;
+  });
+  const sel = document.getElementById('d-comp');
+  sel.innerHTML = comps.length===0?'<option>Sin compromisos</option>':
+    comps.map(c=>{
+      const dev = S.devengados.filter(d=>d.compromisoId===c.id&&d.estado!=='anulado').reduce((s,d)=>s+d.monto,0);
+      const t = S.tareas.find(x=>x.id===c.tareaId);
+      return`<option value="${c.id}">${(t?t.desc.substring(0,38):'?')} — ${fm(c.monto-dev)} disp</option>`;
+    }).join('');
+}
+
+async function regDev(){
+  const cid = document.getElementById('d-comp').value;
+  const monto = +document.getElementById('d-monto').value||0;
+  const fecha = document.getElementById('d-fecha').value||today();
+  const cert = document.getElementById('d-cert').value.trim();
+  const obs = document.getElementById('d-obs').value.trim();
+  const msg = document.getElementById('dev-msg');
+  if(monto<=0){msg.innerHTML='<div class="alert a-danger">Ingresá monto</div>';return;}
+  const r = await api('/devengados','POST',{compromisoId:cid,monto,fecha,cert,obs,creadoPor:CU.name});
+  if(r.error){msg.innerHTML=`<div class="alert a-danger">${r.error}</div>`;return;}
+  ['d-monto','d-cert','d-obs'].forEach(id=>document.getElementById(id).value='');
+  msg.innerHTML = `<div class="alert a-success">✅ Devengado: ${fm(monto)}</div>`;
+  toast('Devengado registrado',fm(monto),'');
+  await loadData();
+  renderAll();
+  setTimeout(()=>msg.innerHTML='',5000);
+}
+
+function fillAmpSelects(){
+  const opts = S.tareas.map(t=>`<option value="${t.id}">${t.desc.substring(0,65)}</option>`).join('');
+  document.getElementById('amp-tarea').innerHTML = opts;
+  document.getElementById('amp-tarea-origen').innerHTML = opts;
+}
+function toggleAmpTipo(){
+  const t = document.getElementById('amp-tipo').value;
+  document.getElementById('amp-origen-ext').style.display = t==='externo'?'block':'none';
+  document.getElementById('amp-origen-reas').style.display = t==='reasignacion'?'block':'none';
+}
+async function regAmp(){
+  const tid = document.getElementById('amp-tarea').value;
+  const tipo = document.getElementById('amp-tipo').value;
+  const inc = +document.getElementById('amp-inc').value;
+  const monto = +document.getElementById('amp-monto').value||0;
+  const acto = document.getElementById('amp-acto').value.trim();
+  const fecha = (tipo==='externo'?document.getElementById('amp-fecha'):document.getElementById('amp-fecha2')).value||today();
+  const motivo = document.getElementById('amp-motivo').value.trim();
+  const tid_orig = document.getElementById('amp-tarea-origen').value;
+  const msg = document.getElementById('amp-msg');
+  if(!tid||monto<=0||!motivo){msg.innerHTML='<div class="alert a-danger">Completá campos</div>';return;}
+  const r = await api('/ampliaciones','POST',{tareaId:tid,tareaOrigenId:tipo==='reasignacion'?tid_orig:null,tipo,inciso:inc,monto,fecha,acto,motivo,creadoPor:CU.name});
+  if(r.error){msg.innerHTML=`<div class="alert a-danger">${r.error}</div>`;return;}
+  ['amp-monto','amp-acto','amp-motivo'].forEach(id=>document.getElementById(id).value='');
+  msg.innerHTML = `<div class="alert a-success">✅ Ampliación: +${fm(monto)} I${inc}</div>`;
+  toast('Ampliación registrada',`+${fm(monto)}`,'');
+  await loadData();
+  renderAll();
+  renderAmpHist();
+  setTimeout(()=>msg.innerHTML='',6000);
+}
+
+function renderAmpHist(){
+  const el = document.getElementById('amp-hist');
+  if(!S.ampliaciones.length){el.innerHTML='<div class="empty">Sin ampliaciones</div>';return;}
+  el.innerHTML = `<table class="gt" style="width:100%">
+    <thead><tr><th>Tarea</th><th>Tipo</th><th>Inc.</th><th style="text-align:right">Monto</th><th>Fecha</th><th>Estado</th></tr></thead>
+    <tbody>${S.ampliaciones.map(a=>{
+      const t = S.tareas.find(x=>x.id===a.tareaId);
+      return`<tr>
+        <td style="font-size:11px">${t?t.desc.substring(0,45):'?'}</td>
+        <td><span class="badge ${a.tipo==='externo'?'bd-prog':'bd-amp'}">${a.tipo==='externo'?'Ext':'Reas'}</span></td>
+        <td>I${a.inciso}</td>
+        <td style="text-align:right;font-family:var(--mono)">${fm(a.monto)}</td>
+        <td style="font-size:10px">${a.fecha}</td>
+        <td><span class="badge ${a.estado==='aprobada'?'bd-ok':'bd-pend'}">${a.estado}</span></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+function renderPendientes(){
+  const el = document.getElementById('pend-list');
+  const pends = S.pendientes.filter(p=>p.estado==='pendiente');
+  if(!pends.length){el.innerHTML='<div class="empty">Sin pendientes</div>';return;}
+  el.innerHTML = pends.map(p=>`
+    <div class="pend-item">
+      <div class="pend-tag">${p.tipo}</div>
+      <div class="pend-desc">${p.desc}</div>
+      <div class="pend-meta">Solicitado: <b>${p.solicitadoPor}</b> · ${p.fecha}</div>
+      <div class="pend-actions">
+        ${CU.rol==='tc'?`
+          <button class="btn btn-green btn-sm" onclick="aprobar('${p.id}')">✔ Aprobar</button>
+          <button class="btn btn-danger btn-sm" onclick="rechazar('${p.id}')">✕ Rechazar</button>
+        `:'<span style="font-size:10px;color:var(--text3)">Requiere TC</span>'}
+      </div>
+    </div>`).join('');
+}
+
+async function aprobar(pid){
+  await api('/pendientes/'+pid+'/aprobar',{aprobadoPor:CU.name});
+  toast('Aprobado','','success');
+  await loadData();
+  renderAll();
+  renderPendientes();
+}
+async function rechazar(pid){
+  const motivo = prompt('Motivo del rechazo:');
+  if(!motivo)return;
+  await api('/pendientes/'+pid+'/rechazar',{motivo,rechazadoPor:CU.name});
+  toast('Rechazado','','err');
+  await loadData();
+  renderAll();
+  renderPendientes();
+}
+
+function renderDocs(){
+  const el = document.getElementById('docs-list');
+  let arcs = S.archivos;
+  if(docTabF==='comp')arcs = arcs.filter(a=>a.compromisoId);
+  if(docTabF==='dev')arcs = arcs.filter(a=>a.devengadoId);
+  if(docTabF==='amp')arcs = arcs.filter(a=>a.ampliacionId);
+  if(!arcs.length){el.innerHTML='<div class="empty">Sin documentación</div>';return;}
+  el.innerHTML = `<div class="alert a-info">${arcs.length} archivo(s) registrado(s)</div>`;
+}
+
+function renderHist(){
+  const el = document.getElementById('hcont');
+  if(!S.historial.length){el.innerHTML='<div class="empty">Sin movimientos</div>';return;}
+  const cols = {success:'var(--green)',info:'var(--blue2)',danger:'var(--red2)',warn:'var(--amber2)'};
+  el.innerHTML = S.historial.slice(0,100).map(h=>`
+    <div class="hitem">
+      <div class="hdot" style="background:${cols[h.tipo]||'#888'}"></div>
+      <div><div class="htext">${h.texto}</div><div class="htime">${h.ts} · ${h.user}</div></div>
+    </div>`).join('');
+}
+
+function renderCierre(){
+  const totVig = S.tareas.reduce((s,t)=>s+getCreditoVigente(t),0);
+  const totComp = S.compromisos.filter(c=>c.estado!=='anulado').reduce((s,c)=>s+c.monto,0);
+  const totDev = S.devengados.filter(d=>d.estado!=='anulado').reduce((s,d)=>s+d.monto,0);
+  const saldo = totVig - totDev;
+  const ok = Math.abs(saldo) < 1;
+  let incRows = '';
+  [2,3,4,5,6].forEach(i=>{
+    const cr = S.tareas.reduce((s,t)=>s+getCreditoVigenteInc(t,i),0);
+    const co = S.compromisos.filter(c=>c.inciso==i&&c.estado!=='anulado').reduce((s,c)=>s+c.monto,0);
+    const dv = S.devengados.filter(d=>d.inciso==i&&d.estado!=='anulado').reduce((s,d)=>s+d.monto,0);
+    if(!cr)return;
+    incRows+=`<tr><td>I${i} — ${INCN[i]}</td><td style="text-align:right;font-family:var(--mono)">${fm(cr)}</td><td style="text-align:right;font-family:var(--mono);color:var(--amber2)">${fm(co)}</td><td style="text-align:right;font-family:var(--mono);color:var(--green2)">${fm(dv)}</td><td style="text-align:right">${cr?Math.round(dv/cr*100):0}%</td><td style="text-align:right;font-family:var(--mono)">${fm(cr-dv)}</td></tr>`;
+  });
+  document.getElementById('cierre-content').innerHTML = `
+    <div class="cierre-box ${ok?'cg':'cr'}">
+      <div style="font-size:14px;font-weight:700;color:${ok?'var(--green2)':'var(--red2)'}">${ok?'✅ Ejercicio cerrado en cero':'⚠️ Saldo pendiente'}</div>
+      <div class="cierre-num" style="color:${ok?'var(--green2)':'var(--red2)'}">${fm(Math.abs(saldo))}</div>
+    </div>
+    <div class="card"><div class="card-head"><div class="card-title">Estado por inciso</div></div>
+      <table class="gt"><thead><tr><th>Inciso</th><th style="text-align:right">Crédito</th><th style="text-align:right">Comp.</th><th style="text-align:right">Dev.</th><th style="text-align:right">%</th><th style="text-align:right">Saldo</th></tr></thead>
+      <tbody>${incRows}</tbody>
+      <tfoot><tr><td>TOTAL</td><td style="text-align:right">${fm(totVig)}</td><td style="text-align:right;color:var(--gold2)">${fm(totComp)}</td><td style="text-align:right;color:var(--green2)">${fm(totDev)}</td><td style="text-align:right">${totVig?Math.round(totDev/totVig*100):0}%</td><td style="text-align:right;color:${saldo<0?'var(--red2)':saldo===0?'var(--green2)':'var(--gold)'}">${fm(saldo)}</td></tr></tfoot>
+      </table></div>`;
+}
+
+function genReport(pkey){
+  const per = PERIODS[pkey];
+  const months = per.months;
+  const comps = S.compromisos.filter(c=>months.includes(c.mes)&&c.estado!=='anulado');
+  const devs = S.devengados.filter(d=>months.includes(d.mes)&&d.estado!=='anulado');
+  const amps = S.ampliaciones.filter(a=>months.includes(a.mes)&&a.estado==='aprobada');
+  const totVig = S.tareas.reduce((s,t)=>s+getCreditoVigente(t),0);
+  const totComp = comps.reduce((s,c)=>s+c.monto,0);
+  const totDev = devs.reduce((s,d)=>s+d.monto,0);
+  const pct = totVig ? Math.round(totDev/totVig*100) : 0;
+
+  document.getElementById('rcontent').innerHTML = `
+    <div class="report-wrap">
+      <div class="rhead">
+        <div><div class="rhead-title">DGCICD — Ejercicio 2026</div><div class="rhead-sub">Reporte de Ejecución</div></div>
+        <div style="text-align:right"><div class="rperiod">${per.label}</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px">
+        <div class="scard"><div class="sc-label">Crédito</div><div class="sc-val">${fm(totVig)}</div></div>
+        <div class="scard"><div class="sc-label">Comp.</div><div class="sc-val gold">${fm(totComp)}</div></div>
+        <div class="scard"><div class="sc-label">Dev.</div><div class="sc-val g">${fm(totDev)}</div></div>
+        <div class="scard"><div class="sc-label">%</div><div class="sc-val ${pct>80?'g':pct>40?'am':'r'}">${pct}%</div></div>
+      </div>
+      <div class="rsec-title">Detalle por tarea</div>
+      <table class="gt"><thead><tr><th>#</th><th>Tarea</th><th style="text-align:right">Vigente</th><th style="text-align:right">Comp.</th><th style="text-align:right">Dev.</th></tr></thead>
+        <tbody>${S.tareas.map((t,idx)=>{
+          const co = comps.filter(c=>c.tareaId===t.id).reduce((s,c)=>s+c.monto,0);
+          const dv = devs.filter(d=>d.tareaId===t.id).reduce((s,d)=>s+d.monto,0);
+          if(!co&&!dv)return'';
+          return`<tr class="${RC_BG[idx%10]}"><td>${idx+1}</td><td style="font-size:11px">${t.desc.substring(0,50)}</td><td style="text-align:right;font-family:var(--mono)">${fm(getCreditoVigente(t))}</td><td style="text-align:right;font-family:var(--mono)">${fm(co)}</td><td style="text-align:right;font-family:var(--mono);color:var(--green2)">${fm(dv)}</td></tr>`;
+        }).join('')}</tbody></table>
+      <div style="margin-top:28px;font-size:9px;color:var(--text3);text-align:center">Generado: ${now()}</div>
+    </div>`;
+  document.getElementById('rpreview').style.display = 'block';
+  document.getElementById('rpreview').scrollIntoView({behavior:'smooth'});
+}
+
+function updatePendBadge(){
+  const n = pendCount();
+  const badge = document.getElementById('pend-badge');
+  badge.textContent = n;
+  badge.style.display = n>0?'inline':'none';
+  const b = document.getElementById('ban-pend');
+  if(n>0 && CU?.rol==='tc'){
+    document.getElementById('ban-pend-txt').textContent = `${n} pendiente(s)`;
+    b.classList.add('show');
+  }else b.classList.remove('show');
+}
+
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(mo=>mo.addEventListener('click',e=>{if(e.target===mo)closeModal(mo.id)}));
+
+initLogin();
+</script>
+</body>
+</html>

@@ -1,0 +1,1845 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DGCICD — Gestión Presupuestaria EF 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#07111f;--navy2:#0d1f35;--navy3:#132840;
+  --gold:#c9a84c;--gold2:#e8c870;--gold3:#f5e0a0;
+  --green:#1a9e6e;--green2:#14c484;
+  --red:#c0392b;--red2:#e74c3c;
+  --amber:#d97706;--amber2:#f59e0b;
+  --blue:#1d5fa8;--blue2:#2980d4;
+  --purple:#6d28d9;
+  --border:#1e3550;--border2:#2a4a6a;
+  --text:#e8eef5;--text2:#8fa8c0;--text3:#5a7a96;
+  --bg:#07111f;--bg2:#0d1f35;--bg3:#132840;--bg4:#1a3450;
+  --font:'IBM Plex Sans',sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+  --r4:4px;--r6:6px;--r8:8px;--r12:12px;--r16:16px;
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:13px;line-height:1.5}
+input,select,textarea,button{font-family:var(--font)}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* ── LOGIN ── */
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at 30% 40%,#0d2a4a 0%,#07111f 70%)}
+.login-box{width:420px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r16);padding:36px;box-shadow:0 24px 80px rgba(0,0,0,.6)}
+.login-crest{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:24px}
+.crest-shield{width:52px;height:52px;background:var(--gold);border-radius:var(--r8);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:var(--navy);letter-spacing:-1px;flex-shrink:0}
+.crest-text{line-height:1.2}
+.crest-unit{font-size:15px;font-weight:700;color:var(--gold)}
+.crest-sub{font-size:10px;color:var(--text2);letter-spacing:.8px;text-transform:uppercase;margin-top:2px}
+.login-title{text-align:center;font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase;margin-bottom:6px}
+.login-date{text-align:center;font-size:11px;color:var(--gold);margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.ucard{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--border);border-radius:var(--r8);margin-bottom:8px;cursor:pointer;transition:all .15s;background:var(--bg3)}
+.ucard:hover{border-color:var(--gold);background:var(--bg4);transform:translateX(3px)}
+.ucard.selected{border-color:var(--gold);background:var(--bg4)}
+.uavatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+.uname{font-size:13px;font-weight:600;color:var(--text)}
+.urole{font-size:10px;color:var(--text3);margin-top:1px}
+.pin-section{margin-top:16px;padding-top:16px;border-top:1px solid var(--border);display:none}
+.pin-label{font-size:10px;color:var(--text2);letter-spacing:.6px;text-transform:uppercase;margin-bottom:8px}
+.pin-input{width:100%;background:var(--bg);border:1px solid var(--border2);border-radius:var(--r6);padding:10px 14px;color:var(--text);font-size:18px;letter-spacing:8px;text-align:center;transition:border .15s}
+.pin-input:focus{outline:none;border-color:var(--gold)}
+.pin-error{font-size:11px;color:var(--red2);text-align:center;margin-top:6px;display:none}
+.btn-login{width:100%;margin-top:10px;padding:10px;background:var(--gold);color:var(--navy);border:none;border-radius:var(--r6);font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.3px;transition:opacity .15s}
+.btn-login:hover{opacity:.9}
+
+/* ── APP SHELL ── */
+#app{display:none;flex-direction:column;min-height:100vh}
+
+/* ── TOPBAR ── */
+.topbar{background:var(--bg2);border-bottom:2px solid var(--gold);padding:0 20px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:sticky;top:0;z-index:50}
+.tb-left{display:flex;align-items:center;gap:12px}
+.tb-shield{width:32px;height:32px;background:var(--gold);border-radius:var(--r4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--navy)}
+.tb-title{font-size:13px;font-weight:700;color:var(--text)}
+.tb-sub{font-size:10px;color:var(--text3);margin-top:1px}
+.tb-right{display:flex;align-items:center;gap:8px}
+.online-pill{display:flex;align-items:center;gap:5px;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:3px 10px;font-size:10px;color:var(--text2)}
+.online-dot{width:6px;height:6px;border-radius:50%;background:var(--green2)}
+.user-pill{background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:4px 12px;font-size:11px;color:var(--text);display:flex;align-items:center;gap:7px}
+.user-pip{width:7px;height:7px;border-radius:50%;background:var(--gold)}
+.btn-out{background:none;border:1px solid var(--border);border-radius:var(--r4);color:var(--text3);font-size:10px;padding:4px 10px;cursor:pointer;letter-spacing:.3px;text-transform:uppercase;transition:all .15s}
+.btn-out:hover{border-color:var(--text2);color:var(--text)}
+
+/* ── ALERTS BANNER ── */
+.alert-banner{display:none;align-items:center;gap:10px;padding:7px 20px;font-size:11px;border-bottom:1px solid;flex-shrink:0}
+.alert-banner.show{display:flex}
+.ab-lock{background:#2d1a00;border-color:#8a5000;color:#f59e0b}
+.ab-warn{background:#1f0d0d;border-color:#7a1f1f;color:#f87171}
+.ab-info{background:#0d1f2d;border-color:#1d5fa8;color:#7dd3fc}
+.ab-pend{background:#1a1100;border-color:#856a00;color:#fbbf24}
+.banner-close{margin-left:auto;cursor:pointer;opacity:.6;font-size:14px;line-height:1}
+.banner-close:hover{opacity:1}
+
+/* ── NOTIFICATIONS TOAST ── */
+.toast-wrap{position:fixed;top:60px;right:16px;z-index:200;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast{background:var(--bg3);border:1px solid var(--border2);border-left:3px solid var(--green);border-radius:var(--r8);padding:10px 14px;font-size:11px;color:var(--text);min-width:260px;max-width:340px;pointer-events:auto;animation:slideIn .2s ease;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.toast.warn{border-left-color:var(--amber)}
+.toast.err{border-left-color:var(--red2)}
+.toast.pend{border-left-color:var(--gold)}
+@keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:translateX(0);opacity:1}}
+.toast-title{font-weight:600;margin-bottom:2px}
+.toast-body{color:var(--text2)}
+
+/* ── SUMMARY BAR ── */
+.sumbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 20px;display:grid;grid-template-columns:repeat(6,1fr);gap:8px;flex-shrink:0}
+.scard{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r6);padding:8px 10px;text-align:center}
+.sc-label{font-size:9px;color:var(--text3);letter-spacing:.7px;text-transform:uppercase;margin-bottom:3px}
+.sc-val{font-size:12px;font-weight:700;color:var(--text);font-family:var(--mono)}
+.sc-val.g{color:var(--green2)}.sc-val.r{color:var(--red2)}.sc-val.gold{color:var(--gold)}.sc-val.b{color:var(--blue2)}.sc-val.am{color:var(--amber2)}
+
+/* ── LAYOUT ── */
+.main{display:flex;flex:1;overflow:hidden;height:calc(100vh - 52px - 42px)}
+.sidebar{width:200px;background:var(--bg2);border-right:1px solid var(--border);padding:10px 0;flex-shrink:0;overflow-y:auto}
+.sb-section{padding:8px 14px 4px;font-size:9px;color:var(--text3);letter-spacing:1.2px;text-transform:uppercase;font-weight:600}
+.sb-item{padding:8px 14px;font-size:12px;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:8px;border-left:3px solid transparent;transition:all .12s;user-select:none}
+.sb-item:hover{background:var(--bg3);color:var(--text)}
+.sb-item.active{background:var(--bg3);color:var(--gold);border-left-color:var(--gold)}
+.sb-badge{margin-left:auto;background:var(--red2);color:#fff;border-radius:10px;padding:1px 6px;font-size:9px;font-weight:700}
+
+.content{flex:1;padding:18px;overflow-y:auto;background:var(--bg)}
+.panel{display:none}.panel.active{display:block}
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:10px}
+.ph-title{font-size:16px;font-weight:700;color:var(--text)}
+.ph-sub{font-size:11px;color:var(--text3);margin-top:2px}
+
+/* ── CARDS ── */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r12);padding:16px;margin-bottom:12px}
+.card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.card-title{font-size:13px;font-weight:600;color:var(--text)}
+
+/* ── BUTTONS ── */
+.btn{padding:6px 12px;border-radius:var(--r6);border:1px solid var(--border2);background:var(--bg3);font-size:11px;cursor:pointer;color:var(--text);transition:all .12s;white-space:nowrap;font-family:var(--font)}
+.btn:hover{background:var(--bg4);border-color:var(--text3)}
+.btn-xs{padding:2px 7px;font-size:10px}
+.btn-sm{padding:4px 9px;font-size:11px}
+.btn-primary{background:var(--blue);border-color:var(--blue2);color:#fff}.btn-primary:hover{background:var(--blue2)}
+.btn-gold{background:var(--gold);border-color:var(--gold2);color:var(--navy);font-weight:700}.btn-gold:hover{background:var(--gold2)}
+.btn-green{background:var(--green);border-color:var(--green2);color:#fff}.btn-green:hover{background:var(--green2)}
+.btn-danger{background:#2d0f0f;border-color:var(--red2);color:var(--red2)}.btn-danger:hover{background:#3d1515}
+.btn-amber{background:#2d1800;border-color:var(--amber2);color:var(--amber2)}.btn-amber:hover{background:#3d2000}
+.btn-purple{background:#1a0a40;border-color:#9d6bff;color:#b794ff}.btn-purple:hover{background:#221050}
+
+/* ── TABS ── */
+.tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:14px;overflow-x:auto}
+.tab{padding:7px 14px;font-size:11px;font-weight:600;cursor:pointer;color:var(--text3);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .12s;letter-spacing:.2px}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* ── FORMS ── */
+.frow{margin-bottom:10px}
+.f2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.f3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.flabel{font-size:10px;color:var(--text2);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:4px;display:block}
+.finput{width:100%;padding:7px 10px;border:1px solid var(--border2);border-radius:var(--r6);font-size:12px;background:var(--bg);color:var(--text);transition:border .12s;font-family:var(--font)}
+.finput:focus{outline:none;border-color:var(--gold);background:var(--bg2)}
+.finput[readonly]{background:var(--bg3);color:var(--text2);cursor:not-allowed}
+select.finput option{background:var(--bg2)}
+
+/* ── ALERTS INLINE ── */
+.alert{padding:8px 12px;border-radius:var(--r6);margin-bottom:10px;font-size:11px;display:flex;align-items:flex-start;gap:8px;border-left:3px solid}
+.a-info{background:#0a1e33;border-color:var(--blue2);color:#7dd3fc}
+.a-warn{background:#1f1500;border-color:var(--amber2);color:var(--amber2)}
+.a-success{background:#051f14;border-color:var(--green);color:var(--green2)}
+.a-danger{background:#1f0505;border-color:var(--red2);color:#fca5a5}
+.a-gold{background:#1f1500;border-color:var(--gold);color:var(--gold2)}
+
+/* ── TASK GRID ── */
+.tgrid-wrap{overflow-x:auto;border-radius:var(--r8);border:1px solid var(--border2)}
+.tgrid{width:100%;border-collapse:collapse;min-width:980px}
+.tgrid thead tr{background:var(--navy3)}
+.tgrid thead th{padding:9px 10px;font-size:9px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text3);border-right:1px solid var(--border);white-space:nowrap;text-align:left}
+.tgrid thead th:last-child{border-right:none}
+.tgrid tbody tr{border-bottom:1px solid var(--border)}
+.tgrid tbody tr:last-child{border-bottom:none}
+.tgrid tbody td{padding:8px 10px;border-right:1px solid var(--border);color:var(--text);vertical-align:middle}
+.tgrid tbody td:last-child{border-right:none}
+.tgrid .th-sep,.tgrid .td-sep{border-right:2px solid var(--border2)!important}
+.tgrid tfoot td{background:var(--navy2);color:var(--gold);font-weight:700;padding:9px 10px;border-top:2px solid var(--gold);font-family:var(--mono);font-size:11px;border-right:1px solid var(--border)}
+
+/* Subtask rows */
+.str td{background:var(--bg3)!important;border-bottom:1px solid var(--border)!important}
+
+/* Row colors */
+.rc0{background:#0d1f35}.rc1{background:#0f1f18}.rc2{background:#1a1200}.rc3{background:#1a0d1f}
+.rc4{background:#0a1a2a}.rc5{background:#1f1000}.rc6{background:#0f1a0a}.rc7{background:#1a0a0a}
+.rc8{background:#0a1a1a}.rc9{background:#1a1500}
+.rb0{border-left:3px solid #3b82f6!important}.rb1{border-left:3px solid var(--green2)!important}
+.rb2{border-left:3px solid var(--gold)!important}.rb3{border-left:3px solid #c084fc!important}
+.rb4{border-left:3px solid #38bdf8!important}.rb5{border-left:3px solid #fb923c!important}
+.rb6{border-left:3px solid #4ade80!important}.rb7{border-left:3px solid #f87171!important}
+.rb8{border-left:3px solid #2dd4bf!important}.rb9{border-left:3px solid #facc15!important}
+
+/* ── PROGRESS ── */
+.pgwrap{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;min-width:50px;margin-top:3px}
+.pgbar{height:100%;border-radius:2px;transition:width .3s}
+.pg-g{background:var(--green2)}.pg-a{background:var(--amber2)}.pg-r{background:var(--red2)}.pg-b{background:var(--blue2)}
+
+/* ── SEMAFORO ── */
+.sema{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;white-space:nowrap}
+.sema-g{background:#051f14;color:var(--green2);border:1px solid var(--green)}
+.sema-a{background:#1f1500;color:var(--amber2);border:1px solid var(--amber)}
+.sema-r{background:#1f0505;color:var(--red2);border:1px solid var(--red)}
+.sema-b{background:#0a1e33;color:#7dd3fc;border:1px solid var(--blue2)}
+.sema-dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+
+/* ── BADGES ── */
+.badge{display:inline-block;font-size:9px;padding:2px 7px;border-radius:10px;font-weight:700;white-space:nowrap;letter-spacing:.2px}
+.bd-ok{background:#051f14;color:var(--green2);border:1px solid var(--green)}
+.bd-comp{background:#1f1500;color:var(--amber2);border:1px solid var(--amber)}
+.bd-prog{background:#0a1e33;color:#7dd3fc;border:1px solid var(--blue2)}
+.bd-none{background:var(--bg4);color:var(--text3);border:1px solid var(--border)}
+.bd-pend{background:#1f1100;color:var(--gold2);border:1px solid var(--gold)}
+.bd-anul{background:#1f0505;color:#fca5a5;border:1px solid var(--red)}
+.bd-amp{background:#1a0a40;color:#b794ff;border:1px solid #7c3aed}
+
+/* ── AMP HISTORY ── */
+.amp-row{background:var(--bg4);border-left:3px solid #7c3aed!important}
+.amp-row td{padding:5px 10px!important;font-size:10px;color:var(--text3)}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r12);padding:22px;width:580px;max-width:100%;max-height:88vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,.7)}
+.modal-title{font-size:14px;font-weight:700;color:var(--text);padding-bottom:12px;border-bottom:1px solid var(--border);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;border-top:1px solid var(--border);padding-top:12px}
+
+/* ── UPLOAD ── */
+.upzone{border:2px dashed var(--border2);border-radius:var(--r8);padding:12px;text-align:center;cursor:pointer;font-size:11px;color:var(--text3);margin-top:5px;transition:all .15s}
+.upzone:hover{border-color:var(--gold);color:var(--gold);background:var(--bg3)}
+.fchip{display:inline-flex;align-items:center;gap:4px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--r4);padding:2px 8px;font-size:10px;color:var(--text2);margin:2px}
+
+/* ── HIST ── */
+.hitem{padding:7px 0;border-bottom:1px solid var(--border);display:flex;gap:10px}
+.hdot{width:8px;height:8px;border-radius:50%;margin-top:4px;flex-shrink:0}
+.htext{font-size:11px;color:var(--text2);line-height:1.5}
+.htime{font-size:9px;color:var(--text3);margin-top:1px}
+
+/* ── REPORT ── */
+.report-wrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r12);padding:20px;margin-bottom:12px}
+.rhead{background:var(--navy3);border-radius:var(--r8);padding:16px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;border-left:4px solid var(--gold)}
+.rhead-title{font-size:15px;font-weight:700;color:var(--text)}
+.rhead-sub{font-size:10px;color:var(--text3);margin-top:3px}
+.rperiod{background:var(--gold);color:var(--navy);padding:4px 12px;border-radius:10px;font-size:11px;font-weight:700;white-space:nowrap}
+.rsec-title{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.7px;border-bottom:1px solid var(--border);padding-bottom:5px;margin-bottom:10px;margin-top:14px}
+
+/* ── GTABLE ── */
+table.gt{width:100%;border-collapse:collapse;font-size:11px}
+table.gt th{padding:6px 9px;background:var(--bg3);color:var(--text3);font-weight:600;font-size:9px;text-transform:uppercase;letter-spacing:.5px;border:1px solid var(--border);text-align:left}
+table.gt td{padding:6px 9px;border:1px solid var(--border);color:var(--text);vertical-align:middle}
+table.gt tr:nth-child(even) td{background:var(--bg3)}
+table.gt tfoot td{background:var(--navy3);color:var(--gold);font-weight:700;font-family:var(--mono)}
+
+/* ── CIERRE ── */
+.cierre-box{border:1px solid;border-radius:var(--r12);padding:20px;text-align:center;margin-bottom:14px}
+.cg{border-color:var(--green);background:#051f14}.cr{border-color:var(--red2);background:#1f0505}
+.cierre-num{font-size:28px;font-weight:700;margin:8px 0;font-family:var(--mono)}
+
+/* ── PENDING PANEL ── */
+.pend-item{background:var(--bg3);border:1px solid var(--border2);border-left:3px solid var(--gold);border-radius:var(--r8);padding:12px;margin-bottom:8px}
+.pend-tag{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px;color:var(--gold)}
+.pend-desc{font-size:12px;color:var(--text);margin-bottom:6px}
+.pend-meta{font-size:10px;color:var(--text3);margin-bottom:8px}
+.pend-actions{display:flex;gap:6px}
+
+/* ── PRINT ── */
+@media print{
+  .sidebar,.topbar,.sumbar,.btn,.modal-overlay,.alert-banner,.toast-wrap,.ph .btn-wrap{display:none!important}
+  body{background:#fff;color:#000;font-size:11px}
+  .content{padding:0}.tgrid thead tr{background:#1a1a2a!important}
+  table.gt th{background:#eee!important;color:#333!important}
+  .rhead{background:#1a1a2a!important}
+  @page{margin:1.5cm;size:A4}
+}
+.empty{text-align:center;padding:40px;color:var(--text3);font-size:12px}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ LOGIN ═══════════════ -->
+<div id="login">
+  <div class="login-box">
+    <div class="login-crest">
+      <div class="crest-shield">EA</div>
+      <div class="crest-text">
+        <div class="crest-unit">DGCICD</div>
+        <div class="crest-sub">Ejército Argentino · EF 2026</div>
+      </div>
+    </div>
+    <div class="login-title">Sistema de Gestión Presupuestaria</div>
+    <div class="login-date" id="ldate"></div>
+    <div id="ucards"></div>
+    <div class="pin-section" id="pin-sec">
+      <div class="pin-label" id="pin-lbl">Ingresá tu PIN</div>
+      <input type="password" class="pin-input" id="pin" maxlength="4" placeholder="••••" oninput="if(this.value.length===4)doLogin()">
+      <div class="pin-error" id="pin-err">PIN incorrecto. Intentá de nuevo.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ APP ═══════════════ -->
+<div id="app" style="display:none;flex-direction:column">
+  <div class="topbar">
+    <div class="tb-left">
+      <div class="tb-shield">EA</div>
+      <div><div class="tb-title">Gestión Presupuestaria — DGCICD</div><div class="tb-sub">Ejército Argentino · EF 2026 · <span id="tb-date"></span></div></div>
+    </div>
+    <div class="tb-right">
+      <div class="online-pill" id="online-pill" style="display:none"><div class="online-dot"></div><span id="online-txt"></span></div>
+      <button class="btn btn-sm btn-green" onclick="window.print()" title="Imprimir / exportar PDF">🖨 Imprimir</button>
+      <button class="btn btn-sm btn-amber" onclick="abrirConfigSync()" title="Configurar sincronización en red">⚙ Sincronización</button>
+      <div class="user-pill"><div class="user-pip"></div><span id="cur-user"></span></div>
+      <button class="btn-out" onclick="logout()">Salir</button>
+    </div>
+  </div>
+
+  <div class="alert-banner ab-lock" id="ban-lock">
+    <span>⚠</span><span id="ban-lock-txt">Edición en curso</span>
+    <span class="banner-close" onclick="closeBanner('ban-lock')">✕</span>
+  </div>
+  <div class="alert-banner ab-warn" id="ban-alert">
+    <span>⚠</span><span id="ban-alert-txt"></span>
+    <span class="banner-close" onclick="closeBanner('ban-alert')">✕</span>
+  </div>
+  <div class="alert-banner ab-pend" id="ban-pend">
+    <span>⏳</span><span id="ban-pend-txt"></span>
+    <span class="banner-close" onclick="closeBanner('ban-pend')">✕</span>
+  </div>
+
+  <div class="sumbar" id="sumbar"></div>
+
+  <div class="main">
+    <div class="sidebar">
+      <div class="sb-section">Presupuesto</div>
+      <div class="sb-item active" onclick="nav('p-tareas',this)" id="nav-tareas">
+        <svg width="13" height="13" fill="currentColor" viewBox="0 0 16 16"><rect x="1" y="2" width="14" height="2" rx="1"/><rect x="1" y="7" width="14" height="2" rx="1"/><rect x="1" y="12" width="8" height="2" rx="1"/></svg>
+        Tareas
+      </div>
+      <div class="sb-item" onclick="nav('p-comprometer',this)">
+        <svg width="13" height="13" fill="currentColor" viewBox="0 0 16 16"><path d="M13 2H3a1 1 0 00-1 1v10a1 1 0 001 1h10a1 1 0 001-1V3a1 1 0 00-1-1zM7 11L4 8l1.4-1.4L7 8.2l3.6-3.6L12 6z"/></svg>
+        Comprometer
+      </div>
+      <div class="sb-item" onclick="nav('p-devengar',this)">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2" stroke-linecap="round"/></svg>
+        Devengar
+      </div>
+      <div class="sb-item" onclick="nav('p-ampliaciones',this)">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v6M5 8h6" stroke-linecap="round"/></svg>
+        Ampliaciones
+      </div>
+      <div class="sb-item" onclick="nav('p-pendientes',this)" id="nav-pend">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 16 16"><path d="M8 2v4l3 2" stroke-linecap="round"/><circle cx="8" cy="8" r="6"/></svg>
+        Pendientes
+        <span class="sb-badge" id="pend-badge" style="display:none">0</span>
+      </div>
+      <div class="sb-section">Documentos</div>
+      <div class="sb-item" onclick="nav('p-documentos',this)">
+        <svg width="13" height="13" fill="currentColor" viewBox="0 0 16 16"><path d="M4 1h6l4 4v9a1 1 0 01-1 1H3a1 1 0 01-1-1V2a1 1 0 011-1z"/></svg>
+        Documentación
+      </div>
+      <div class="sb-item" onclick="nav('p-historial',this)">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 1.5" stroke-linecap="round"/></svg>
+        Historial
+      </div>
+      <div class="sb-section">Reportes</div>
+      <div class="sb-item" onclick="nav('p-reportes',this)">
+        <svg width="13" height="13" fill="currentColor" viewBox="0 0 16 16"><path d="M2 2h12v12H2zM4 5h8M4 8h8M4 11h5"/></svg>
+        Reportes
+      </div>
+      <div class="sb-section">Cierre</div>
+      <div class="sb-item" onclick="nav('p-cierre',this)">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 16 16"><path d="M2 8a6 6 0 0012 0M14 8l-2 2-2-2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Cierre Anual
+      </div>
+      <div class="sb-section">Sistema</div>
+      <div class="sb-item" onclick="abrirConfigSync()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.4" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.1 3.1l1.4 1.4M11.5 11.5l1.4 1.4M3.1 12.9l1.4-1.4M11.5 4.5l1.4-1.4" stroke-linecap="round"/></svg>
+        Sincronización
+      </div>
+      <div class="sb-item" onclick="nav('p-config-sync',this)" style="display:none"></div>
+    </div>
+
+    <div class="content">
+
+      <!-- ══ TAREAS ══ -->
+      <div id="p-tareas" class="panel active">
+        <div class="ph">
+          <div><div class="ph-title">Tareas Presupuestarias</div><div class="ph-sub">Grilla de control con ampliaciones de crédito — EF 2026</div></div>
+          <button class="btn btn-primary btn-sm" onclick="openModalTarea()">+ Nueva tarea</button>
+        </div>
+        <div class="tabs">
+          <div class="tab active" onclick="ftab('todas',this)">Todas</div>
+          <div class="tab" onclick="ftab('inc2',this)">Inciso 2</div>
+          <div class="tab" onclick="ftab('inc3',this)">Inciso 3</div>
+          <div class="tab" onclick="ftab('inc4',this)">Inciso 4</div>
+          <div class="tab" onclick="ftab('inc5',this)">Inciso 5</div>
+          <div class="tab" onclick="ftab('inc6',this)">Inciso 6</div>
+          <div class="tab" onclick="ftab('ampliadas',this)">Con ampliaciones</div>
+        </div>
+        <div id="tlist"></div>
+      </div>
+
+      <!-- ══ COMPROMETER ══ -->
+      <div id="p-comprometer" class="panel">
+        <div class="ph"><div><div class="ph-title">Comprometer Crédito</div><div class="ph-sub">Registrar compromiso con acto administrativo</div></div></div>
+        <div class="alert a-info">Seleccioná tarea e inciso. El sistema validará contra el crédito vigente (original + ampliaciones aprobadas).</div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Nuevo compromiso</div></div>
+          <div class="frow"><label class="flabel">Tarea</label><select class="finput" id="c-tarea" onchange="updCompSubs()"></select></div>
+          <div class="frow"><label class="flabel">Subtarea (opcional)</label><select class="finput" id="c-sub"></select></div>
+          <div class="f3">
+            <div class="frow" style="margin:0"><label class="flabel">Inciso</label>
+              <select class="finput" id="c-inc">
+                <option value="2">I2 — Bs. consumo</option><option value="3">I3 — Servicios</option>
+                <option value="4">I4 — Bs. uso</option><option value="5">I5 — Transferencias</option><option value="6">I6 — Act. financieros</option>
+              </select></div>
+            <div class="frow" style="margin:0"><label class="flabel">Monto ($)</label><input class="finput" type="number" id="c-monto" placeholder="0"></div>
+            <div class="frow" style="margin:0"><label class="flabel">Fecha</label><input class="finput" type="date" id="c-fecha"></div>
+          </div>
+          <div class="frow"><label class="flabel">N° Acto Administrativo</label><input class="finput" type="text" id="c-acto" placeholder="NO-2026-XXXXX-APN-DGCICD#EA"></div>
+          <div class="frow"><label class="flabel">Descripción</label><input class="finput" type="text" id="c-desc" placeholder="Descripción del compromiso"></div>
+          <div class="frow">
+            <label class="flabel">Crédito vigente disponible</label>
+            <div id="c-credito-info" class="alert a-info" style="margin:0;font-family:var(--mono)">Seleccioná tarea e inciso</div>
+          </div>
+          <div class="frow"><label class="flabel">Documentación de respaldo</label>
+            <div class="upzone" onclick="document.getElementById('c-file').click()">📎 Adjuntar NO, Resolución, contrato u otro documento</div>
+            <input type="file" id="c-file" style="display:none" multiple onchange="hFiles('c-file','c-flist','comp')">
+            <div id="c-flist" style="margin-top:6px"></div>
+          </div>
+          <div style="text-align:right"><button class="btn btn-gold" onclick="regComp()">✔ Registrar compromiso</button></div>
+        </div>
+        <div id="comp-msg"></div>
+      </div>
+
+      <!-- ══ DEVENGAR ══ -->
+      <div id="p-devengar" class="panel">
+        <div class="ph"><div><div class="ph-title">Devengar Crédito</div><div class="ph-sub">Certificar ejecución y devengar el compromiso registrado</div></div></div>
+        <div class="alert a-info">Solo se puede devengar sobre compromisos activos con saldo disponible. Adjuntá el certificado de la prestación.</div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Registrar devengado</div></div>
+          <div class="frow"><label class="flabel">Compromiso a devengar</label><select class="finput" id="d-comp"></select></div>
+          <div class="f3">
+            <div class="frow" style="margin:0"><label class="flabel">Monto ($)</label><input class="finput" type="number" id="d-monto" placeholder="0"></div>
+            <div class="frow" style="margin:0"><label class="flabel">Fecha</label><input class="finput" type="date" id="d-fecha"></div>
+            <div class="frow" style="margin:0"><label class="flabel">N° Certificado/Factura</label><input class="finput" type="text" id="d-cert" placeholder="Nro."></div>
+          </div>
+          <div class="frow"><label class="flabel">Observaciones</label><input class="finput" type="text" id="d-obs" placeholder="Descripción del devengado"></div>
+          <div class="frow"><label class="flabel">Documentación certificante</label>
+            <div class="upzone" onclick="document.getElementById('d-file').click()">📎 Adjuntar factura, remito, acta de recepción</div>
+            <input type="file" id="d-file" style="display:none" multiple onchange="hFiles('d-file','d-flist','dev')">
+            <div id="d-flist" style="margin-top:6px"></div>
+          </div>
+          <div style="text-align:right"><button class="btn btn-gold" onclick="regDev()">✔ Registrar devengado</button></div>
+        </div>
+        <div id="dev-msg"></div>
+      </div>
+
+      <!-- ══ AMPLIACIONES ══ -->
+      <div id="p-ampliaciones" class="panel">
+        <div class="ph"><div><div class="ph-title">Ampliaciones de Crédito</div><div class="ph-sub">Refuerzo externo (acto administrativo) o reasignación interna entre tareas</div></div></div>
+        <div class="alert a-gold">Registrá ampliaciones por refuerzo externo (acto administrativo) o reasignación interna. El crédito vigente se actualiza en el momento del registro. Todas las ampliaciones quedan registradas en el historial con su documentación de respaldo.</div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Registrar ampliación</div></div>
+          <div class="f2">
+            <div class="frow" style="margin:0"><label class="flabel">Tipo de ampliación</label>
+              <select class="finput" id="amp-tipo" onchange="toggleAmpTipo()">
+                <option value="externo">Refuerzo externo (acto administrativo)</option>
+                <option value="reasignacion">Reasignación interna (desde otra tarea)</option>
+              </select>
+            </div>
+            <div class="frow" style="margin:0"><label class="flabel">Tarea destino</label><select class="finput" id="amp-tarea"></select></div>
+          </div>
+          <div class="f2">
+            <div class="frow" style="margin:0"><label class="flabel">Inciso</label>
+              <select class="finput" id="amp-inc">
+                <option value="2">I2 — Bs. consumo</option><option value="3">I3 — Servicios</option>
+                <option value="4">I4 — Bs. uso</option><option value="5">I5 — Transferencias</option><option value="6">I6 — Act. financieros</option>
+              </select>
+            </div>
+            <div class="frow" style="margin:0"><label class="flabel">Monto de ampliación ($)</label><input class="finput" type="number" id="amp-monto" placeholder="0"></div>
+          </div>
+          <div id="amp-origen-ext">
+            <div class="f2">
+              <div class="frow" style="margin:0"><label class="flabel">Acto administrativo origen</label><input class="finput" type="text" id="amp-acto" placeholder="Resolución / NO / Decreto"></div>
+              <div class="frow" style="margin:0"><label class="flabel">Fecha</label><input class="finput" type="date" id="amp-fecha"></div>
+            </div>
+          </div>
+          <div id="amp-origen-reas" style="display:none">
+            <div class="f2">
+              <div class="frow" style="margin:0"><label class="flabel">Tarea origen (descuento)</label><select class="finput" id="amp-tarea-origen"></select></div>
+              <div class="frow" style="margin:0"><label class="flabel">Fecha</label><input class="finput" type="date" id="amp-fecha2"></div>
+            </div>
+            <div class="alert a-warn" style="margin-top:8px">El monto se descontará del crédito de la tarea origen. Verificá que tenga saldo suficiente.</div>
+          </div>
+          <div class="frow"><label class="flabel">Justificación / motivo</label><input class="finput" type="text" id="amp-motivo" placeholder="Justificación de la ampliación"></div>
+          <div class="frow"><label class="flabel">Documentación de respaldo</label>
+            <div class="upzone" onclick="document.getElementById('amp-file').click()">📎 Adjuntar acto que origina la ampliación</div>
+            <input type="file" id="amp-file" style="display:none" multiple onchange="hFiles('amp-file','amp-flist','amp')">
+            <div id="amp-flist" style="margin-top:6px"></div>
+          </div>
+          <div style="text-align:right"><button class="btn btn-purple" onclick="regAmp()">↑ Registrar ampliación (activa inmediatamente)</button></div>
+        </div>
+        <div id="amp-msg"></div>
+        <div class="card">
+          <div class="card-head"><div class="card-title">Historial de ampliaciones</div></div>
+          <div id="amp-hist"></div>
+        </div>
+      </div>
+
+      <!-- ══ PENDIENTES ══ -->
+      <div id="p-pendientes" class="panel">
+        <div class="ph"><div><div class="ph-title">Aprobaciones Pendientes</div><div class="ph-sub">Correcciones y anulaciones de compromisos/devengados que requieren aprobación del TC ESPINOLA</div></div></div>
+        <div id="pend-list"><div class="empty">Sin pendientes</div></div>
+      </div>
+
+      <!-- ══ DOCUMENTOS ══ -->
+      <div id="p-documentos" class="panel">
+        <div class="ph">
+          <div><div class="ph-title">Documentación de Respaldo</div><div class="ph-sub">Archivos organizados por año → trimestre → tipo</div></div>
+          <button class="btn btn-amber btn-sm" onclick="abrirConfigSync()">⚙ Configurar ruta de carpeta</button>
+        </div>
+        <div class="alert a-info" style="margin-bottom:10px">
+          <div>📁 <b>Carpeta de documentos configurada:</b> <span id="doc-path-display" style="font-family:var(--mono);font-size:10px"></span></div>
+          <div style="font-size:10px;margin-top:4px;color:var(--blue2)">Los documentos deben guardarse manualmente en la carpeta de red indicada. Cualquier usuario autorizado puede acceder desde el Explorador de Windows.</div>
+        </div>
+        <div class="tabs">
+          <div class="tab active" onclick="fdoctab('todas',this)">Todas</div>
+          <div class="tab" onclick="fdoctab('comp',this)">Compromisos</div>
+          <div class="tab" onclick="fdoctab('dev',this)">Devengados</div>
+          <div class="tab" onclick="fdoctab('amp',this)">Ampliaciones</div>
+        </div>
+        <div id="docs-list"></div>
+      </div>
+
+      <!-- ══ HISTORIAL ══ -->
+      <div id="p-historial" class="panel">
+        <div class="ph"><div><div class="ph-title">Historial de Movimientos</div><div class="ph-sub">Registro cronológico — compromisos, devengados, anulaciones, correcciones</div></div></div>
+        <div class="card"><div id="hcont"><div class="empty">Sin movimientos</div></div></div>
+      </div>
+
+      <!-- ══ REPORTES ══ -->
+      <div id="p-reportes" class="panel">
+        <div class="ph"><div><div class="ph-title">Reportes de Ejecución</div><div class="ph-sub">Trimestrales y semestrales con tabla de evolución de crédito y documentación</div></div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+          <div class="card">
+            <div class="card-head"><div class="card-title">Reportes Trimestrales</div></div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <button class="btn btn-primary" onclick="genReport('T1')">📄 1° Trimestre (Ene–Mar)</button>
+              <button class="btn btn-primary" onclick="genReport('T2')">📄 2° Trimestre (Abr–Jun)</button>
+              <button class="btn btn-primary" onclick="genReport('T3')">📄 3° Trimestre (Jul–Sep)</button>
+              <button class="btn btn-primary" onclick="genReport('T4')">📄 4° Trimestre (Oct–Dic)</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><div class="card-title">Reportes Semestrales</div></div>
+            <div style="display:flex;flex-direction:column;gap:7px">
+              <button class="btn btn-primary" onclick="genReport('S1')">📄 1° Semestre (Ene–Jun)</button>
+              <button class="btn btn-primary" onclick="genReport('S2')">📄 2° Semestre (Jul–Dic)</button>
+            </div>
+          </div>
+        </div>
+        <div id="rpreview" style="display:none">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+            <div style="font-size:13px;font-weight:700;color:var(--text)">Vista previa</div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-green btn-sm" onclick="window.print()">🖨 Imprimir / PDF</button>
+              <button class="btn btn-sm" onclick="document.getElementById('rpreview').style.display='none'">✕ Cerrar</button>
+            </div>
+          </div>
+          <div id="rcontent"></div>
+        </div>
+      </div>
+
+      <!-- ══ CIERRE ══ -->
+      <div id="p-cierre" class="panel">
+        <div class="ph"><div><div class="ph-title">Cierre Anual — EF 2026</div><div class="ph-sub">El ejercicio cierra en cero pesos. Se consideran créditos vigentes (con ampliaciones).</div></div></div>
+        <div id="cierre-content"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div class="toast-wrap" id="toasts"></div>
+
+<!-- Modal Configuración Sincronización -->
+<div class="modal-overlay" id="m-sync">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-title">⚙ Configuración de Sincronización en Red</div>
+    <div class="alert a-info" style="margin-bottom:12px">
+      Para ver los datos cargados por otros usuarios desde otra máquina, configurá un servidor JSON compartido en red local.<br>
+      <b>Opción simple:</b> ejecutar en el servidor: <code style="background:var(--bg4);padding:2px 6px;border-radius:3px;font-size:10px">npx json-server --watch estado.json --port 3000 --host 0.0.0.0</code>
+    </div>
+    <div class="frow">
+      <label class="flabel">URL del servidor de sincronización (dejar vacío para solo local)</label>
+      <input class="finput" type="text" id="sync-url-input" placeholder="http://192.168.1.100:3000/estado" style="font-family:var(--mono)">
+    </div>
+    <div style="font-size:10px;color:var(--text3);margin-top:4px;margin-bottom:12px">Ejemplo: <b>http://192.168.X.X:3000/estado</b> — debe ser accesible desde todas las PCs de la red</div>
+    <div class="frow">
+      <label class="flabel">Ruta carpeta de documentos (carpeta compartida en red)</label>
+      <input class="finput" type="text" id="sync-docpath-input" placeholder="\\SERVIDOR\DGCICD\Presupuesto2026" style="font-family:var(--mono)">
+    </div>
+    <div style="font-size:10px;color:var(--text3);margin-top:4px">Esta ruta se usará como referencia para localizar documentos en el Explorador de Windows</div>
+    <div id="sync-test-result" style="margin-top:10px"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('m-sync')">Cancelar</button>
+      <button class="btn btn-amber" onclick="testSync()">🔌 Probar conexión</button>
+      <button class="btn btn-primary" onclick="guardarConfigSync()">✔ Guardar configuración</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODALES -->
+<!-- Tarea -->
+<div class="modal-overlay" id="m-tarea">
+  <div class="modal">
+    <div class="modal-title" id="m-tarea-title">🗂 Nueva Tarea</div>
+    <div class="frow"><label class="flabel">Descripción</label><input class="finput" type="text" id="t-desc" placeholder="Denominación completa"></div>
+    <div class="f3">
+      <div class="frow" style="margin:0"><label class="flabel">Programa</label><input class="finput" type="text" id="t-prog" placeholder="Ej: 16"></div>
+      <div class="frow" style="margin:0"><label class="flabel">Actividad</label><input class="finput" type="text" id="t-act" placeholder="Ej: 12"></div>
+      <div class="frow" style="margin:0"><label class="flabel">Ref/BAPIN</label><input class="finput" type="text" id="t-ref" placeholder="Nro."></div>
+    </div>
+    <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin:12px 0 8px;border-top:1px solid var(--border);padding-top:10px">Crédito inicial por inciso ($)</div>
+    <div class="f2">
+      <div class="frow" style="margin:0"><label class="flabel">Inciso 2 — Bs. consumo</label><input class="finput" type="number" id="t-i2" placeholder="0"></div>
+      <div class="frow" style="margin:0"><label class="flabel">Inciso 3 — Servicios</label><input class="finput" type="number" id="t-i3" placeholder="0"></div>
+    </div>
+    <div class="f2">
+      <div class="frow" style="margin:0"><label class="flabel">Inciso 4 — Bs. uso</label><input class="finput" type="number" id="t-i4" placeholder="0"></div>
+      <div class="frow" style="margin:0"><label class="flabel">Inciso 5 — Transferencias</label><input class="finput" type="number" id="t-i5" placeholder="0"></div>
+    </div>
+    <div class="frow"><label class="flabel">Inciso 6 — Activos financieros</label><input class="finput" type="number" id="t-i6" placeholder="0"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('m-tarea')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveTarea()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Subtarea -->
+<div class="modal-overlay" id="m-sub">
+  <div class="modal">
+    <div class="modal-title" id="m-sub-title">➕ Nueva Subtarea</div>
+    <div class="alert a-info" id="m-sub-parent"></div>
+    <div class="frow"><label class="flabel">Descripción</label><input class="finput" type="text" id="st-desc" placeholder="Descripción de la subtarea"></div>
+    <div class="f3">
+      <div class="frow" style="margin:0"><label class="flabel">Inciso</label>
+        <select class="finput" id="st-inc">
+          <option value="2">I2</option><option value="3">I3</option><option value="4">I4</option><option value="5">I5</option><option value="6">I6</option>
+        </select>
+      </div>
+      <div class="frow" style="margin:0"><label class="flabel">Crédito ($)</label><input class="finput" type="number" id="st-cred" placeholder="0"></div>
+      <div class="frow" style="margin:0"><label class="flabel">Ref</label><input class="finput" type="text" id="st-ref" placeholder="—"></div>
+    </div>
+    <div class="frow"><label class="flabel">Observaciones</label><input class="finput" type="text" id="st-obs" placeholder="—"></div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('m-sub')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveSub()">Guardar subtarea</button>
+    </div>
+  </div>
+</div>
+
+<!-- Corregir / Anular -->
+<div class="modal-overlay" id="m-corregir">
+  <div class="modal">
+    <div class="modal-title" id="m-corr-title">✏️ Corrección / Anulación</div>
+    <div class="alert a-warn" id="m-corr-info"></div>
+    <div class="frow"><label class="flabel">Tipo de acción</label>
+      <select class="finput" id="corr-tipo" onchange="updCorrTipo()">
+        <option value="correccion">Corrección parcial de monto</option>
+        <option value="anulacion">Anulación completa del movimiento</option>
+      </select>
+    </div>
+    <div id="corr-monto-sec">
+      <div class="frow"><label class="flabel">Nuevo monto corregido ($)</label><input class="finput" type="number" id="corr-monto" placeholder="0"></div>
+    </div>
+    <div class="frow"><label class="flabel">Motivo (obligatorio)</label><input class="finput" type="text" id="corr-motivo" placeholder="Descripción del motivo"></div>
+    <div class="alert a-gold" style="margin-top:8px">Esta solicitud quedará pendiente de aprobación del TC ESPINOLA antes de modificar el movimiento.</div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeModal('m-corregir')">Cancelar</button>
+      <button class="btn btn-amber" onclick="solicitarCorreccion()">Solicitar corrección/anulación</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════
+// CONFIG
+// ════════════════════════════════════════════
+const USERS=[
+  {id:'pe',name:'TC Paulo ESPINOLA',role:'Teniente Coronel — DGPyP',color:'#3b82f6',ini:'PE',pin:'1234',rol:'tc'},
+  {id:'jg',name:'SP Jorge GRAMAJO', role:'Sargento Primero — DGCICD',color:'#14c484',ini:'JG',pin:'2345',rol:'op'},
+  {id:'ir',name:'SP Ismael RAMOS',  role:'Sargento Primero — DGCICD',color:'#c084fc',ini:'IR',pin:'3456',rol:'op'}
+];
+const INCN={2:'Bienes de consumo',3:'Servicios no personales',4:'Bienes de uso',5:'Transferencias',6:'Activos financieros'};
+const SK='ea_dgcicd_2026_v6', LK='ea_lock_v6', AK='ea_active_v6', SK_SESS='ea_sess_v6';
+// ── SYNC CONFIG ──────────────────────────────
+// Para sincronización entre máquinas en red local, configurar la URL del servidor JSON
+// Ejemplo: 'http://192.168.1.100:3000/estado' o dejar vacío para usar solo localStorage
+let SYNC_URL = localStorage.getItem('ea_sync_url') || '';
+let syncChannel = null;
+try { syncChannel = new BroadcastChannel('ea_dgcicd_2026'); } catch(e) {}
+// Ruta base para documentos en carpeta de red compartida
+const DOC_BASE_PATH = localStorage.getItem('ea_doc_path') || '\\\\SERVIDOR\\DGCICD\\Presupuesto2026';
+const RC_BG=['rc0','rc1','rc2','rc3','rc4','rc5','rc6','rc7','rc8','rc9'];
+const RC_BD=['rb0','rb1','rb2','rb3','rb4','rb5','rb6','rb7','rb8','rb9'];
+const PERIODS={
+  T1:{label:'1° Trimestre',months:[1,2,3],range:'Enero – Marzo 2026'},
+  T2:{label:'2° Trimestre',months:[4,5,6],range:'Abril – Junio 2026'},
+  T3:{label:'3° Trimestre',months:[7,8,9],range:'Julio – Septiembre 2026'},
+  T4:{label:'4° Trimestre',months:[10,11,12],range:'Octubre – Diciembre 2026'},
+  S1:{label:'1° Semestre',months:[1,2,3,4,5,6],range:'Enero – Junio 2026'},
+  S2:{label:'2° Semestre',months:[7,8,9,10,11,12],range:'Julio – Diciembre 2026'}
+};
+
+// ════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════
+let CU=null,PU=null;
+let S={tareas:[],compromisos:[],devengados:[],ampliaciones:[],pendientes:[],historial:[],archivos:[]};
+let tabF='todas', docTabF='todas';
+let editTId=null, subParentId=null, corrTarget=null;
+let TF={comp:[],dev:[],amp:[]};
+let expandedTareas=new Set();
+let pollTimer=null;
+
+// ════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════
+const fm=n=>new Intl.NumberFormat('es-AR',{style:'currency',currency:'ARS',maximumFractionDigits:0}).format(n||0);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).substr(2,5);
+const today=()=>new Date().toISOString().split('T')[0];
+const mon=s=>s?parseInt(s.split('-')[1]):0;
+const now=()=>new Date().toLocaleString('es-AR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+const dateStr=()=>new Date().toLocaleDateString('es-AR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+const pc=(v,t)=>t?Math.min(Math.round(v/t*100),100):0;
+const pgcls=p=>p>80?'pg-r':p>60?'pg-a':'pg-g';
+const fmtQ=m=>{const q=PERIODS;for(const k in q){if(q[k].months.includes(m))return q[k].label;}return 'Sin trimestre';}
+
+function getTotalOrig(t){return(t.i2||0)+(t.i3||0)+(t.i4||0)+(t.i5||0)+(t.i6||0)}
+function getAmpAprobadas(tid){return S.ampliaciones.filter(a=>a.tareaId===tid&&a.estado==='aprobada')}
+function getCreditoVigente(t){
+  const orig=getTotalOrig(t);
+  const amps=getAmpAprobadas(t.id).reduce((s,a)=>s+a.monto,0);
+  return orig+amps;
+}
+function getCreditoVigenteInc(t,inc){
+  const orig=t['i'+inc]||0;
+  const amps=getAmpAprobadas(t.id).filter(a=>a.inciso==inc).reduce((s,a)=>s+a.monto,0);
+  return orig+amps;
+}
+function getComp(tid){return S.compromisos.filter(c=>c.tareaId===tid&&c.estado!=='anulado').reduce((s,c)=>s+c.monto,0)}
+function getDev(tid){return S.devengados.filter(d=>d.tareaId===tid&&d.estado!=='anulado').reduce((s,d)=>s+d.monto,0)}
+function getSaldo(t){return getCreditoVigente(t)-getComp(t.id)}
+function pendCount(){return S.pendientes.filter(p=>p.estado==='pendiente').length}
+
+// ════════════════════════════════════════════
+// STORAGE — con sincronización entre máquinas
+// ════════════════════════════════════════════
+
+function normalizeState(st){
+  if(!st.tareas)st.tareas=[];if(!st.compromisos)st.compromisos=[];
+  if(!st.devengados)st.devengados=[];if(!st.ampliaciones)st.ampliaciones=[];
+  if(!st.pendientes)st.pendientes=[];if(!st.historial)st.historial=[];
+  if(!st.archivos)st.archivos=[];if(!st.docRutas)st.docRutas={};
+  st.tareas.forEach(t=>{if(!t.subtareas)t.subtareas=[];if(!t.ampliaciones)t.ampliaciones=[]});
+  return st;
+}
+
+function save(){
+  try{
+    localStorage.setItem(SK,JSON.stringify(S));
+    if(syncChannel){try{syncChannel.postMessage({type:'update',state:S,user:CU?CU.name:''});}catch(e){}}
+    if(SYNC_URL){
+      fetch(SYNC_URL,{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({ts:Date.now(),state:S,user:CU?CU.name:''})
+      }).catch(()=>{});
+    }
+  }catch(e){toast('Error al guardar','Verificá el almacenamiento','err');}
+}
+
+function load(){
+  try{
+    const r=localStorage.getItem(SK);
+    if(r){S=normalizeState(JSON.parse(r));}else{initData();}
+  }catch(e){initData();}
+}
+
+// Cargar desde servidor de red (async, no bloquea)
+function loadFromNetwork(){
+  if(!SYNC_URL)return;
+  fetch(SYNC_URL+'?t='+Date.now()).then(r=>r.ok?r.json():null).then(remote=>{
+    if(remote&&remote.state){
+      const prev=JSON.stringify(S);
+      S=normalizeState(remote.state);
+      localStorage.setItem(SK,JSON.stringify(S));
+      if(JSON.stringify(S)!==prev){renderAll();toast('Datos sincronizados','Estado actualizado desde el servidor de red','');}
+    }
+  }).catch(()=>{});
+}
+
+// Escuchar cambios en tiempo real desde otras pestañas en la misma PC
+if(syncChannel){
+  syncChannel.onmessage=(e)=>{
+    if(e.data&&e.data.type==='update'&&e.data.user!==CU?.name){
+      S=normalizeState(e.data.state);
+      localStorage.setItem(SK,JSON.stringify(S));
+      renderAll();toast('Actualización recibida','Cambios de '+e.data.user+' aplicados','');
+    }
+  };
+}
+
+// ════════════════════════════════════════════
+// PRESENCE & LOCK
+// ════════════════════════════════════════════
+function setPresence(){try{const a=JSON.parse(localStorage.getItem(AK)||'{}');a[CU.id]={n:CU.name,ts:Date.now()};localStorage.setItem(AK,JSON.stringify(a));}catch(e){}}
+function getOnline(){try{const a=JSON.parse(localStorage.getItem(AK)||'{}');return Object.values(a).filter(u=>Date.now()-u.ts<25000);}catch(e){return[]}}
+function clearPresence(){try{const a=JSON.parse(localStorage.getItem(AK)||'{}');delete a[CU.id];localStorage.setItem(AK,JSON.stringify(a));}catch(e){}}
+function acquireLock(id){
+  try{
+    const l=JSON.parse(localStorage.getItem(LK)||'null');
+    if(l&&l.uid!==CU.id&&Date.now()-l.ts<180000)return false;
+    localStorage.setItem(LK,JSON.stringify({id,uid:CU.id,un:CU.name,ts:Date.now()}));return true;
+  }catch(e){return true}
+}
+function releaseLock(){try{const l=JSON.parse(localStorage.getItem(LK)||'null');if(l&&l.uid===CU.id)localStorage.removeItem(LK);}catch(e){}}
+function refreshLock(){try{const l=JSON.parse(localStorage.getItem(LK)||'null');if(l&&l.uid===CU.id){l.ts=Date.now();localStorage.setItem(LK,JSON.stringify(l));}}catch(e){}}
+
+function startPolling(){
+  pollTimer=setInterval(()=>{
+    setPresence();refreshLock();
+    const prev=JSON.stringify(S);
+    // Sync desde red si está configurado, sino localStorage
+    if(SYNC_URL){ loadFromNetwork(); }
+    else { load(); }
+    const onl=getOnline();
+    const op=document.getElementById('online-pill');
+    if(onl.length>1){op.style.display='flex';document.getElementById('online-txt').textContent=onl.filter(u=>u.n!==CU.name).map(u=>u.n.split(' ')[0]).join(', ')+' en línea';}
+    else op.style.display='none';
+    checkLockBanner();checkAlertBanner();checkPendBanner();
+    if(JSON.stringify(S)!==prev)renderAll();
+    updatePendBadge();
+  },6000);
+  setInterval(()=>{setPresence();refreshLock();},20000);
+}
+
+function checkLockBanner(){
+  try{
+    const l=JSON.parse(localStorage.getItem(LK)||'null');
+    const b=document.getElementById('ban-lock');
+    if(l&&l.uid!==CU.id&&Date.now()-l.ts<180000){
+      const t=S.tareas.find(x=>x.id===l.id);
+      document.getElementById('ban-lock-txt').textContent=`${l.un} está editando "${t?t.desc.substring(0,50):'una tarea'}" — esperá antes de modificarla`;
+      b.classList.add('show');
+    }else b.classList.remove('show');
+  }catch(e){}
+}
+
+function checkAlertBanner(){
+  const alerts=[];
+  S.tareas.forEach(t=>{
+    const vig=getCreditoVigente(t),comp=getComp(t.id),dev=getDev(t.id);
+    if(vig>0){
+      if(pc(dev,vig)>=80&&pc(dev,vig)<100) alerts.push(`⚠ "${t.desc.substring(0,40)}" al ${pc(dev,vig)}% devengado`);
+      if(comp>=vig&&dev<vig) alerts.push(`🔴 "${t.desc.substring(0,40)}" crédito 100% comprometido sin devengar`);
+    }
+  });
+  const b=document.getElementById('ban-alert');
+  if(alerts.length){document.getElementById('ban-alert-txt').textContent=alerts.join(' · ');b.classList.add('show');}
+  else b.classList.remove('show');
+}
+
+function checkPendBanner(){
+  const n=pendCount();
+  const b=document.getElementById('ban-pend');
+  if(n>0&&CU.rol==='tc'){
+    document.getElementById('ban-pend-txt').textContent=`Tenés ${n} solicitud(es) pendiente(s) de aprobación`;
+    b.classList.add('show');
+  } else b.classList.remove('show');
+}
+
+function updatePendBadge(){
+  const n=pendCount();
+  const badge=document.getElementById('pend-badge');
+  badge.textContent=n;badge.style.display=n>0?'inline':'none';
+}
+
+function closeBanner(id){document.getElementById(id).classList.remove('show')}
+
+// ════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════
+function toast(title,body,type=''){
+  const wrap=document.getElementById('toasts');
+  const el=document.createElement('div');
+  el.className='toast '+(type||'');
+  el.innerHTML=`<div class="toast-title">${title}</div><div class="toast-body">${body}</div>`;
+  wrap.appendChild(el);
+  setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(20px)';el.style.transition='all .3s';setTimeout(()=>el.remove(),300);},4000);
+}
+
+// ════════════════════════════════════════════
+// DEFAULT DATA
+// ════════════════════════════════════════════
+function initData(){
+  const raw=[
+    {desc:'Contratos de apoyo a las actividades EA (Prog 1)',prog:'1',act:'1',ref:'5',i2:0,i3:2442596215,i4:0,i5:0,i6:0},
+    {desc:'Mantenimiento de Equipos de Comunicaciones (Cdo Br Bl II)',prog:'1',act:'1',ref:'6',i2:85000000,i3:0,i4:0,i5:0,i6:0},
+    {desc:'Contratos de apoyo a las actividades EA (Prog 16)',prog:'16',act:'5',ref:'5',i2:0,i3:179746136,i4:0,i5:0,i6:0},
+    {desc:'Adquisición de celulares, monitores y PC completa',prog:'16',act:'5',ref:'2',i2:0,i3:0,i4:70429755,i5:0,i6:0},
+    {desc:'Operación SUCOM',prog:'16',act:'12',ref:'—',i2:88000000,i3:87865860,i4:0,i5:0,i6:0},
+    {desc:'Curso de Logística Internacional — TEXAS — EEUU',prog:'16',act:'12',ref:'—',i2:0,i3:25000000,i4:0,i5:0,i6:0},
+    {desc:'Cursos de Capacitación Fuera del Programa 17',prog:'16',act:'12',ref:'—',i2:0,i3:0,i4:0,i5:41608142,i6:0},
+    {desc:'Ejercicio de Demostración Técnica y Evaluación (EEUU)',prog:'16',act:'12',ref:'—',i2:0,i3:1046640,i4:0,i5:0,i6:0},
+    {desc:'Mantenimiento de la red fija EMGE',prog:'16',act:'12',ref:'3',i2:300000000,i3:0,i4:0,i5:0,i6:0},
+    {desc:'Obra nueva sistema de seguridad electrónica B Ars 603',prog:'16',act:'12',ref:'3',i2:64245000,i3:0,i4:0,i5:0,i6:0},
+    {desc:'Servicio satelital VPN con video móvil',prog:'16',act:'12',ref:'7',i2:0,i3:849000000,i4:0,i5:0,i6:0},
+    {desc:'Mantenimiento de Redes Guarnicionales',prog:'16',act:'13',ref:'—',i2:752587688,i3:0,i4:0,i5:0,i6:0},
+    {desc:'Desarrollo de Sistemas Informáticos',prog:'16',act:'13',ref:'—',i2:0,i3:141600000,i4:0,i5:0,i6:0},
+    {desc:'Mantenimiento de Equipos de Comunicaciones (Br Bl I, Br Mte III, Br Mec X)',prog:'16',act:'13',ref:'—',i2:244615205,i3:55384795,i4:0,i5:0,i6:0},
+    {desc:'Mantenimiento de datacenter 2da etapa',prog:'16',act:'13',ref:'3',i2:0,i3:600000000,i4:0,i5:0,i6:0},
+    {desc:'Adquisición de Radios Elbit VCTAM',prog:'16',act:'15',ref:'4',i2:0,i3:0,i4:0,i5:0,i6:1275000000},
+    {desc:'Contratos de apoyo a las actividades EA (Prog 24)',prog:'24',act:'1',ref:'5',i2:0,i3:202783676,i4:0,i5:0,i6:0},
+  ];
+  S.tareas=raw.map(t=>({...t,id:uid(),subtareas:[],creado:today(),creadoPor:'Sistema'}));
+  S.compromisos=[];S.devengados=[];S.ampliaciones=[];S.pendientes=[];S.historial=[];S.archivos=[];
+}
+
+// ════════════════════════════════════════════
+// LOGIN
+// ════════════════════════════════════════════
+function initLogin(){
+  document.getElementById('ldate').textContent=dateStr();
+  document.getElementById('ucards').innerHTML=USERS.map(u=>`
+    <div class="ucard" onclick="selUser('${u.id}')" id="uc-${u.id}">
+      <div class="uavatar" style="background:${u.color}22;color:${u.color};border:1.5px solid ${u.color}40">${u.ini}</div>
+      <div><div class="uname">${u.name}</div><div class="urole">${u.role}</div></div>
+    </div>`).join('');
+  // Auto session
+  try{
+    const sess=JSON.parse(localStorage.getItem(SK_SESS)||'null');
+    if(sess&&sess.day===today()){const u=USERS.find(x=>x.id===sess.uid);if(u){CU=u;launch();return;}}
+  }catch(e){}
+}
+
+function selUser(uid){
+  document.querySelectorAll('.ucard').forEach(c=>c.classList.remove('selected'));
+  document.getElementById('uc-'+uid).classList.add('selected');
+  PU=USERS.find(u=>u.id===uid);
+  const ps=document.getElementById('pin-sec');
+  ps.style.display='block';
+  document.getElementById('pin-lbl').textContent=`PIN — ${PU.name.split(' ').slice(0,2).join(' ')}`;
+  document.getElementById('pin').value='';
+  document.getElementById('pin-err').style.display='none';
+  setTimeout(()=>document.getElementById('pin').focus(),100);
+}
+
+function doLogin(){
+  if(!PU)return;
+  if(document.getElementById('pin').value===PU.pin){
+    CU=PU;
+    localStorage.setItem(SK_SESS,JSON.stringify({uid:CU.id,day:today()}));
+    launch();
+  }else{
+    document.getElementById('pin-err').style.display='block';
+    document.getElementById('pin').value='';
+  }
+}
+
+function launch(){
+  load();
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').style.display='flex';
+  document.getElementById('cur-user').textContent=CU.name;
+  document.getElementById('tb-date').textContent=dateStr();
+  document.getElementById('c-fecha').value=today();
+  document.getElementById('d-fecha').value=today();
+  document.getElementById('amp-fecha').value=today();
+  document.getElementById('amp-fecha2').value=today();
+  setPresence();
+  addHist('info','Sesión iniciada — '+CU.name);
+  save();renderAll();startPolling();
+  // Intentar cargar datos actualizados desde red
+  if(SYNC_URL){ setTimeout(()=>{ loadFromNetwork().then?.(()=>{}).catch(()=>{}); },500); }
+}
+
+function logout(){
+  releaseLock();clearPresence();clearInterval(pollTimer);
+  localStorage.removeItem(SK_SESS);CU=null;PU=null;
+  document.getElementById('app').style.display='none';
+  document.getElementById('login').style.display='flex';
+  document.getElementById('pin-sec').style.display='none';
+}
+
+// ════════════════════════════════════════════
+// NAV
+// ════════════════════════════════════════════
+function nav(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sb-item').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(el)el.classList.add('active');
+  if(id==='p-comprometer'){fillCompSelects();}
+  if(id==='p-devengar'){fillDevSelect();}
+  if(id==='p-ampliaciones'){fillAmpSelects();renderAmpHist();}
+  if(id==='p-pendientes'){renderPendientes();}
+  if(id==='p-documentos'){
+    const dp=document.getElementById('doc-path-display');
+    if(dp)dp.textContent=localStorage.getItem('ea_doc_path')||DOC_BASE_PATH;
+    renderDocs();
+  }
+}
+
+function ftab(f,el){
+  tabF=f;
+  document.querySelectorAll('#p-tareas .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');renderTareas();
+}
+
+function fdoctab(f,el){
+  docTabF=f;
+  document.querySelectorAll('#p-documentos .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');renderDocs();
+}
+
+// ════════════════════════════════════════════
+// RENDER ALL
+// ════════════════════════════════════════════
+function renderAll(){
+  renderSumbar();renderTareas();renderHist();renderCierre();updatePendBadge();
+}
+
+// ════════════════════════════════════════════
+// SUMBAR
+// ════════════════════════════════════════════
+function renderSumbar(){
+  const cred=S.tareas.reduce((s,t)=>s+getCreditoVigente(t),0);
+  const orig=S.tareas.reduce((s,t)=>s+getTotalOrig(t),0);
+  const comp=S.compromisos.filter(c=>c.estado!=='anulado').reduce((s,c)=>s+c.monto,0);
+  const dev=S.devengados.filter(d=>d.estado!=='anulado').reduce((s,d)=>s+d.monto,0);
+  const saldo=cred-comp;
+  const pct=cred?Math.round(dev/cred*100):0;
+  document.getElementById('sumbar').innerHTML=`
+    <div class="scard"><div class="sc-label">Crédito vigente</div><div class="sc-val">${fm(cred)}</div></div>
+    <div class="scard"><div class="sc-label">Ampliado</div><div class="sc-val am">${fm(cred-orig)}</div></div>
+    <div class="scard"><div class="sc-label">Comprometido</div><div class="sc-val gold">${fm(comp)}</div></div>
+    <div class="scard"><div class="sc-label">Devengado</div><div class="sc-val g">${fm(dev)}</div></div>
+    <div class="scard"><div class="sc-label">Saldo disponible</div><div class="sc-val ${saldo<0?'r':''}">${fm(saldo)}</div></div>
+    <div class="scard"><div class="sc-label">Ejecución</div><div class="sc-val ${pct>80?'g':pct>40?'am':'r'}">${pct}%</div></div>`;
+}
+
+// ════════════════════════════════════════════
+// SEMAFORO
+// ════════════════════════════════════════════
+function semaforo(t){
+  const vig=getCreditoVigente(t),comp=getComp(t.id),dev=getDev(t.id);
+  if(!vig) return '<span class="sema sema-b"><span class="sema-dot"></span>Sin crédito</span>';
+  const pDev=pc(dev,vig), pComp=pc(comp,vig);
+  if(dev>=vig) return '<span class="sema sema-g"><span class="sema-dot"></span>Devengado ✓</span>';
+  if(pDev>=80) return '<span class="sema sema-r"><span class="sema-dot"></span>80%+ devengado</span>';
+  if(pComp>=100) return '<span class="sema sema-r"><span class="sema-dot"></span>Comprometido 100%</span>';
+  if(comp>0) return '<span class="sema sema-a"><span class="sema-dot"></span>En ejecución</span>';
+  return '<span class="sema sema-b"><span class="sema-dot"></span>Sin movimiento</span>';
+}
+
+// ════════════════════════════════════════════
+// RENDER TAREAS
+// ════════════════════════════════════════════
+function renderTareas(){
+  let ts=S.tareas;
+  if(tabF!=='todas'&&tabF!=='ampliadas'){
+    const inc=parseInt(tabF.replace('inc',''));
+    ts=ts.filter(t=>getCreditoVigenteInc(t,inc)>0);
+  }
+  if(tabF==='ampliadas') ts=ts.filter(t=>getAmpAprobadas(t.id).length>0);
+  if(!ts.length){document.getElementById('tlist').innerHTML='<div class="empty">Sin tareas para este filtro</div>';return;}
+
+  const totVig=ts.reduce((s,t)=>s+getCreditoVigente(t),0);
+  const totComp=ts.reduce((s,t)=>s+getComp(t.id),0);
+  const totDev=ts.reduce((s,t)=>s+getDev(t.id),0);
+  const totSaldo=totVig-totComp;
+
+  let rows='';
+  ts.forEach((t,idx)=>{
+    const vig=getCreditoVigente(t),orig=getTotalOrig(t),comp=getComp(t.id),dev=getDev(t.id),saldo=vig-comp;
+    const pC=pc(comp,vig),pD=pc(dev,vig);
+    const amps=getAmpAprobadas(t.id);
+    const incs=[2,3,4,5,6].filter(i=>getCreditoVigenteInc(t,i)>0).map(i=>`I${i}`).join(' ');
+    const bg=RC_BG[idx%10],bd=RC_BD[idx%10];
+    const isExp=expandedTareas.has(t.id);
+
+    rows+=`<tr class="${bg}" style="cursor:default">
+      <td class="${bd}" style="font-weight:700;color:inherit;text-align:center;font-size:11px">${idx+1}</td>
+      <td class="td-sep" style="font-size:10px;color:var(--text3);white-space:nowrap">${t.prog}/${t.act}</td>
+      <td style="min-width:180px;max-width:220px">
+        <div style="font-weight:600;font-size:11px;line-height:1.35;color:var(--text)">${t.desc}</div>
+        ${t.ref&&t.ref!='—'?`<div style="font-size:9px;color:var(--text3)">Ref: ${t.ref}</div>`:''}
+        ${amps.length?`<span class="badge bd-amp" style="margin-top:3px;display:inline-block">+${amps.length} ampliación${amps.length>1?'es':''}</span>`:''}
+      </td>
+      <td class="td-sep" style="font-size:10px;color:var(--text3)">${incs||'—'}</td>
+      <td style="text-align:right;white-space:nowrap">
+        <div style="font-weight:700;font-family:var(--mono);font-size:11px">${fm(vig)}</div>
+        ${vig>orig?`<div style="font-size:9px;color:#b794ff">orig: ${fm(orig)}</div>`:''}
+      </td>
+      <td style="text-align:right;white-space:nowrap">
+        <div style="color:var(--amber2);font-weight:600;font-family:var(--mono);font-size:11px">${fm(comp)}</div>
+        <div class="pgwrap"><div class="pgbar pg-a" style="width:${pC}%"></div></div>
+        <div style="font-size:9px;color:var(--text3)">${pC}%</div>
+      </td>
+      <td class="td-sep" style="text-align:right;white-space:nowrap">
+        <div style="color:var(--green2);font-weight:600;font-family:var(--mono);font-size:11px">${fm(dev)}</div>
+        <div class="pgwrap"><div class="pgbar ${pgcls(pD)}" style="width:${pD}%"></div></div>
+        <div style="font-size:9px;color:var(--text3)">${pD}%</div>
+      </td>
+      <td style="text-align:right;font-weight:700;font-family:var(--mono);font-size:11px;white-space:nowrap;color:${saldo<0?'var(--red2)':'var(--text)'}">${fm(saldo)}</td>
+      <td class="td-sep">${semaforo(t)}</td>
+      <td>
+        <div style="display:flex;gap:3px;flex-wrap:wrap">
+          <button class="btn btn-xs" onclick="editTarea('${t.id}')">✏️</button>
+          <button class="btn btn-xs btn-primary" onclick="openSub('${t.id}')">＋Sub</button>
+          ${amps.length?`<button class="btn btn-xs btn-purple" onclick="toggleExp('${t.id}')">${isExp?'▲':'▼'} Amps</button>`:''}
+          <button class="btn btn-xs btn-danger" onclick="delTarea('${t.id}')">✕</button>
+        </div>
+      </td>
+    </tr>`;
+
+    // Ampliaciones expandibles
+    if(isExp){
+      amps.forEach(a=>{
+        rows+=`<tr class="amp-row">
+          <td colspan="2" style="font-size:9px;color:#b794ff;padding-left:18px!important">↳ AMP</td>
+          <td colspan="2" style="font-size:10px;color:var(--text2)">${a.tipo==='externo'?'🔵 Refuerzo externo':'🔄 Reasignación interna'} — ${a.motivo||'—'} (${a.acto||a.fecha})</td>
+          <td style="text-align:right;font-family:var(--mono);color:#b794ff">+${fm(a.monto)}</td>
+          <td colspan="5" style="font-size:9px;color:var(--text3)">I${a.inciso} · Aprobada: ${a.fechaAprobacion||a.fecha} · ${a.aprobadaPor||'—'}</td>
+        </tr>`;
+      });
+    }
+
+    // Subtareas
+    (t.subtareas||[]).forEach(st=>{
+      const stComp=S.compromisos.filter(c=>c.subtareaId===st.id&&c.estado!=='anulado').reduce((s,c)=>s+c.monto,0);
+      const stDev=S.devengados.filter(d=>d.subtareaId===st.id&&d.estado!=='anulado').reduce((s,d)=>s+d.monto,0);
+      rows+=`<tr class="str ${bg}">
+        <td style="border-left:3px solid transparent;text-align:center;font-size:10px;color:var(--text3)">↳</td>
+        <td class="td-sep" style="font-size:10px;color:var(--text3)">I${st.inciso}</td>
+        <td colspan="2" style="font-size:11px;color:var(--text2);padding-left:20px!important">⤷ ${st.desc}${st.obs?` <span style="color:var(--text3)">— ${st.obs}</span>`:''}</td>
+        <td style="text-align:right;font-family:var(--mono);font-size:11px">${fm(st.credito||0)}</td>
+        <td style="text-align:right;color:var(--amber2);font-family:var(--mono);font-size:11px">${fm(stComp)}</td>
+        <td class="td-sep" style="text-align:right;color:var(--green2);font-family:var(--mono);font-size:11px">${fm(stDev)}</td>
+        <td style="text-align:right;font-family:var(--mono);font-size:11px">${fm((st.credito||0)-stComp)}</td>
+        <td class="td-sep"></td>
+        <td>
+          <div style="display:flex;gap:3px">
+            <button class="btn btn-xs btn-amber" onclick="editSub('${t.id}','${st.id}')" title="Editar subtarea">✏️</button>
+            <button class="btn btn-xs btn-danger" onclick="delSub('${t.id}','${st.id}')" title="Eliminar subtarea">✕</button>
+          </div>
+        </td>
+      </tr>`;
+    });
+  });
+
+  document.getElementById('tlist').innerHTML=`
+    <div class="tgrid-wrap">
+      <table class="tgrid">
+        <thead><tr>
+          <th style="width:28px">#</th><th class="th-sep">Prog/Act</th><th>Descripción</th>
+          <th class="th-sep">Inc.</th><th style="text-align:right">Crédito vigente</th>
+          <th style="text-align:right">Comprometido</th><th class="th-sep" style="text-align:right">Devengado</th>
+          <th style="text-align:right">Saldo disp.</th><th class="th-sep">Semáforo</th><th>Acciones</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+        <tfoot><tr>
+          <td colspan="4" style="font-size:10px;letter-spacing:.5px">TOTAL EF 2026</td>
+          <td style="text-align:right">${fm(totVig)}</td>
+          <td style="text-align:right;color:var(--gold2)">${fm(totComp)}</td>
+          <td style="text-align:right;color:var(--green2)">${fm(totDev)}</td>
+          <td style="text-align:right;color:${totSaldo<0?'var(--red2)':'var(--gold)'}">${fm(totSaldo)}</td>
+          <td colspan="2"></td>
+        </tr></tfoot>
+      </table>
+    </div>`;
+}
+
+function toggleExp(tid){
+  if(expandedTareas.has(tid))expandedTareas.delete(tid);else expandedTareas.add(tid);
+  renderTareas();
+}
+
+// ════════════════════════════════════════════
+// TAREA CRUD
+// ════════════════════════════════════════════
+function openModalTarea(){
+  editTId=null;
+  document.getElementById('m-tarea-title').textContent='🗂 Nueva Tarea';
+  ['t-desc','t-prog','t-act','t-ref','t-i2','t-i3','t-i4','t-i5','t-i6'].forEach(id=>document.getElementById(id).value='');
+  openModal('m-tarea');
+}
+
+function editTarea(id){
+  if(!acquireLock(id)){const l=JSON.parse(localStorage.getItem(LK)||'null');alert(`${l?l.un:'Otro usuario'} está editando esta tarea.`);return;}
+  editTId=id;const t=S.tareas.find(x=>x.id===id);if(!t)return;
+  document.getElementById('m-tarea-title').textContent='✏️ Editar Tarea';
+  document.getElementById('t-desc').value=t.desc||'';document.getElementById('t-prog').value=t.prog||'';
+  document.getElementById('t-act').value=t.act||'';document.getElementById('t-ref').value=t.ref||'';
+  document.getElementById('t-i2').value=t.i2||0;document.getElementById('t-i3').value=t.i3||0;
+  document.getElementById('t-i4').value=t.i4||0;document.getElementById('t-i5').value=t.i5||0;
+  document.getElementById('t-i6').value=t.i6||0;
+  openModal('m-tarea');
+}
+
+function saveTarea(){
+  const desc=document.getElementById('t-desc').value.trim();
+  if(!desc){alert('Ingresá descripción');return;}
+  const d={desc,prog:document.getElementById('t-prog').value.trim()||'—',act:document.getElementById('t-act').value.trim()||'—',ref:document.getElementById('t-ref').value.trim()||'—',i2:+document.getElementById('t-i2').value||0,i3:+document.getElementById('t-i3').value||0,i4:+document.getElementById('t-i4').value||0,i5:+document.getElementById('t-i5').value||0,i6:+document.getElementById('t-i6').value||0};
+  if(editTId){S.tareas[S.tareas.findIndex(t=>t.id===editTId)]={...S.tareas.find(t=>t.id===editTId),...d};addHist('info','Tarea editada: '+desc.substring(0,50));releaseLock();}
+  else{S.tareas.push({...d,id:uid(),subtareas:[],creado:today(),creadoPor:CU.name});addHist('success','Nueva tarea: '+desc.substring(0,50));}
+  closeModal('m-tarea');save();renderAll();fillCompSelects();fillAmpSelects();
+}
+
+function delTarea(id){
+  if(!acquireLock(id)){alert('Otro usuario está editando esta tarea.');return;}
+  const t=S.tareas.find(x=>x.id===id);
+  if(!confirm(`¿Eliminar "${t?t.desc.substring(0,60):'?'}"?`)){releaseLock();return;}
+  S.tareas=S.tareas.filter(x=>x.id!==id);
+  S.compromisos=S.compromisos.filter(c=>c.tareaId!==id);
+  S.devengados=S.devengados.filter(d=>d.tareaId!==id);
+  addHist('danger','Tarea eliminada: '+(t?t.desc.substring(0,50):'?'));
+  releaseLock();save();renderAll();
+}
+
+// ════════════════════════════════════════════
+// SUBTAREAS
+// ════════════════════════════════════════════
+let editSubId=null;
+function openSub(pid){
+  if(!acquireLock(pid)){alert('Otro usuario está editando esta tarea.');return;}
+  subParentId=pid;editSubId=null;const t=S.tareas.find(x=>x.id===pid);
+  document.getElementById('m-sub-title').textContent='➕ Nueva Subtarea';
+  document.getElementById('m-sub-parent').textContent='Tarea: '+(t?t.desc.substring(0,70):'?');
+  ['st-desc','st-ref','st-obs','st-cred'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('st-inc').value='2';
+  openModal('m-sub');
+}
+function editSub(tid,stid){
+  if(!acquireLock(tid)){alert('Otro usuario está editando esta tarea.');return;}
+  const t=S.tareas.find(x=>x.id===tid);if(!t)return;
+  const st=t.subtareas.find(x=>x.id===stid);if(!st)return;
+  subParentId=tid;editSubId=stid;
+  document.getElementById('m-sub-title').textContent='✏️ Editar Subtarea';
+  document.getElementById('m-sub-parent').textContent='Tarea: '+t.desc.substring(0,70);
+  document.getElementById('st-desc').value=st.desc||'';
+  document.getElementById('st-inc').value=st.inciso||'2';
+  document.getElementById('st-cred').value=st.credito||0;
+  document.getElementById('st-ref').value=st.ref||'';
+  document.getElementById('st-obs').value=st.obs||'';
+  openModal('m-sub');
+}
+function saveSub(){
+  const desc=document.getElementById('st-desc').value.trim();if(!desc){alert('Ingresá descripción');return;}
+  const t=S.tareas.find(x=>x.id===subParentId);if(!t)return;
+  if(!t.subtareas)t.subtareas=[];
+  const data={desc,inciso:+document.getElementById('st-inc').value,credito:+document.getElementById('st-cred').value||0,ref:document.getElementById('st-ref').value,obs:document.getElementById('st-obs').value};
+  if(editSubId){
+    // Editar existente
+    const idx=t.subtareas.findIndex(x=>x.id===editSubId);
+    if(idx>=0){t.subtareas[idx]={...t.subtareas[idx],...data,modificado:today(),modificadoPor:CU.name};}
+    addHist('info','Subtarea editada: '+desc.substring(0,40));
+  } else {
+    t.subtareas.push({...data,id:uid(),creado:today(),creadoPor:CU.name});
+    addHist('success','Subtarea agregada: '+desc.substring(0,40));
+  }
+  releaseLock();closeModal('m-sub');save();renderAll();
+}
+function delSub(tid,stid){
+  if(!acquireLock(tid)){alert('Otro usuario edita esta tarea.');return;}
+  const t=S.tareas.find(x=>x.id===tid);if(!t)return;
+  const st=t.subtareas.find(x=>x.id===stid);
+  if(!confirm(`¿Eliminar subtarea "${st?st.desc.substring(0,50):'?'}"?`)){releaseLock();return;}
+  t.subtareas=(t.subtareas||[]).filter(s=>s.id!==stid);
+  addHist('danger','Subtarea eliminada: '+(st?st.desc.substring(0,40):'?'));releaseLock();save();renderAll();
+}
+
+// ════════════════════════════════════════════
+// COMPROMETER
+// ════════════════════════════════════════════
+function fillCompSelects(){
+  document.getElementById('c-tarea').innerHTML=S.tareas.map(t=>`<option value="${t.id}">${t.desc.substring(0,70)}</option>`).join('');
+  updCompSubs();
+}
+function updCompSubs(){
+  const tid=document.getElementById('c-tarea').value;
+  const t=S.tareas.find(x=>x.id===tid);
+  const subs=t?t.subtareas||[]:[];
+  document.getElementById('c-sub').innerHTML='<option value="">— Sin subtarea —</option>'+subs.map(st=>`<option value="${st.id}">↳ ${st.desc.substring(0,60)}</option>`).join('');
+  updCompInfo();
+}
+function updCompInfo(){
+  const tid=document.getElementById('c-tarea').value;
+  const inc=+document.getElementById('c-inc').value;
+  const t=S.tareas.find(x=>x.id===tid);
+  if(!t){document.getElementById('c-credito-info').textContent='Seleccioná tarea e inciso';return;}
+  const vig=getCreditoVigenteInc(t,inc);
+  const comp=S.compromisos.filter(c=>c.tareaId===tid&&c.inciso==inc&&c.estado!=='anulado').reduce((s,c)=>s+c.monto,0);
+  const disp=vig-comp;
+  document.getElementById('c-credito-info').innerHTML=`Crédito vigente I${inc}: <b>${fm(vig)}</b> · Comprometido: <b>${fm(comp)}</b> · <b style="color:${disp<0?'var(--red2)':'var(--green2)'}">Disponible: ${fm(disp)}</b>`;
+}
+document.addEventListener('change',e=>{if(e.target.id==='c-inc'||e.target.id==='c-tarea')updCompInfo();});
+
+function regComp(){
+  const tid=document.getElementById('c-tarea').value;
+  const sid=document.getElementById('c-sub').value||null;
+  const inc=+document.getElementById('c-inc').value;
+  const monto=+document.getElementById('c-monto').value||0;
+  const fecha=document.getElementById('c-fecha').value||today();
+  const acto=document.getElementById('c-acto').value.trim();
+  const desc=document.getElementById('c-desc').value.trim();
+  const msg=document.getElementById('comp-msg');
+  if(!tid||monto<=0){msg.innerHTML=`<div class="alert a-danger">Completá tarea y monto</div>`;return;}
+  const t=S.tareas.find(x=>x.id===tid);
+  const vig=getCreditoVigenteInc(t,inc);
+  const comp=S.compromisos.filter(c=>c.tareaId===tid&&c.inciso==inc&&c.estado!=='anulado').reduce((s,c)=>s+c.monto,0);
+  const disp=vig-comp;
+  if(monto>disp+1){msg.innerHTML=`<div class="alert a-danger">El monto (${fm(monto)}) supera el saldo disponible del I${inc}: ${fm(disp)}</div>`;return;}
+  const id=uid();
+  const arcs=TF.comp.map(f=>({nombre:f.name,tipo:f.type,compromisoId:id,tareaId:tid,subtareaId:sid,fecha,mes:mon(fecha),trimestre:fmtQ(mon(fecha))}));
+  S.compromisos.push({id,tareaId:tid,subtareaId:sid,inciso:inc,monto,fecha,mes:mon(fecha),acto,desc,estado:'activo',creadoPor:CU.name,archivos:arcs});
+  S.archivos.push(...arcs);
+  addHist('success',`Compromiso ${fm(monto)} I${inc} — ${t.desc.substring(0,40)} — ${acto||'s/n'}`);
+  TF.comp=[];document.getElementById('c-flist').innerHTML='';
+  ['c-monto','c-acto','c-desc'].forEach(id=>document.getElementById(id).value='');
+  msg.innerHTML=`<div class="alert a-success">✅ Compromiso registrado: ${fm(monto)} — I${inc}</div>`;
+  toast('Compromiso registrado',`${fm(monto)} — ${t.desc.substring(0,40)}`,'');
+  save();renderAll();fillDevSelect();setTimeout(()=>msg.innerHTML='',5000);
+}
+
+// ════════════════════════════════════════════
+// DEVENGAR
+// ════════════════════════════════════════════
+function fillDevSelect(){
+  const comps=S.compromisos.filter(c=>{
+    if(c.estado==='anulado')return false;
+    const dev=S.devengados.filter(d=>d.compromisoId===c.id&&d.estado!=='anulado').reduce((s,d)=>s+d.monto,0);
+    return c.monto>dev;
+  });
+  const sel=document.getElementById('d-comp');
+  sel.innerHTML=comps.length===0?'<option>Sin compromisos con saldo disponible</option>':
+    comps.map(c=>{
+      const dev=S.devengados.filter(d=>d.compromisoId===c.id&&d.estado!=='anulado').reduce((s,d)=>s+d.monto,0);
+      const t=S.tareas.find(x=>x.id===c.tareaId);
+      return`<option value="${c.id}">${(t?t.desc.substring(0,38):'?')} — ${fm(c.monto-dev)} disp — ${c.acto||'s/n'}</option>`;
+    }).join('');
+}
+
+function regDev(){
+  const cid=document.getElementById('d-comp').value;
+  const monto=+document.getElementById('d-monto').value||0;
+  const fecha=document.getElementById('d-fecha').value||today();
+  const cert=document.getElementById('d-cert').value.trim();
+  const obs=document.getElementById('d-obs').value.trim();
+  const msg=document.getElementById('dev-msg');
+  if(monto<=0){msg.innerHTML=`<div class="alert a-danger">Ingresá un monto</div>`;return;}
+  const comp=S.compromisos.find(c=>c.id===cid);
+  if(!comp){msg.innerHTML=`<div class="alert a-danger">Seleccioná un compromiso</div>`;return;}
+  const dev=S.devengados.filter(d=>d.compromisoId===cid&&d.estado!=='anulado').reduce((s,d)=>s+d.monto,0);
+  const saldo=comp.monto-dev;
+  if(monto>saldo+1){msg.innerHTML=`<div class="alert a-danger">Monto supera el saldo del compromiso: ${fm(saldo)}</div>`;return;}
+  const id=uid();
+  const arcs=TF.dev.map(f=>({nombre:f.name,tipo:f.type,devengadoId:id,tareaId:comp.tareaId,fecha,mes:mon(fecha),trimestre:fmtQ(mon(fecha))}));
+  S.devengados.push({id,compromisoId:cid,tareaId:comp.tareaId,subtareaId:comp.subtareaId,inciso:comp.inciso,monto,fecha,mes:mon(fecha),cert,obs,estado:'activo',creadoPor:CU.name,archivos:arcs});
+  S.archivos.push(...arcs);
+  const t=S.tareas.find(x=>x.id===comp.tareaId);
+  addHist('info',`Devengado ${fm(monto)} — ${t?t.desc.substring(0,40):'?'} — ${cert||'s/n'}`);
+  TF.dev=[];document.getElementById('d-flist').innerHTML='';
+  ['d-monto','d-cert','d-obs'].forEach(id=>document.getElementById(id).value='');
+  msg.innerHTML=`<div class="alert a-success">✅ Devengado registrado: ${fm(monto)}</div>`;
+  toast('Devengado registrado',`${fm(monto)} — ${t?t.desc.substring(0,40):''}`,'');
+  save();renderAll();fillDevSelect();setTimeout(()=>msg.innerHTML='',5000);
+}
+
+// ════════════════════════════════════════════
+// AMPLIACIONES
+// ════════════════════════════════════════════
+function fillAmpSelects(){
+  const opts=S.tareas.map(t=>`<option value="${t.id}">${t.desc.substring(0,65)}</option>`).join('');
+  document.getElementById('amp-tarea').innerHTML=opts;
+  document.getElementById('amp-tarea-origen').innerHTML=opts;
+}
+
+function toggleAmpTipo(){
+  const t=document.getElementById('amp-tipo').value;
+  document.getElementById('amp-origen-ext').style.display=t==='externo'?'block':'none';
+  document.getElementById('amp-origen-reas').style.display=t==='reasignacion'?'block':'none';
+}
+
+function regAmp(){
+  const tid=document.getElementById('amp-tarea').value;
+  const tipo=document.getElementById('amp-tipo').value;
+  const inc=+document.getElementById('amp-inc').value;
+  const monto=+document.getElementById('amp-monto').value||0;
+  const acto=document.getElementById('amp-acto').value.trim();
+  const fecha=(tipo==='externo'?document.getElementById('amp-fecha'):document.getElementById('amp-fecha2')).value||today();
+  const motivo=document.getElementById('amp-motivo').value.trim();
+  const tid_orig=document.getElementById('amp-tarea-origen').value;
+  const msg=document.getElementById('amp-msg');
+  if(!tid||monto<=0||!motivo){msg.innerHTML=`<div class="alert a-danger">Completá todos los campos obligatorios</div>`;return;}
+  if(tipo==='reasignacion'){
+    const tOrig=S.tareas.find(x=>x.id===tid_orig);
+    if(!tOrig){msg.innerHTML=`<div class="alert a-danger">Seleccioná tarea origen</div>`;return;}
+    const dispOrig=getCreditoVigenteInc(tOrig,inc)-S.compromisos.filter(c=>c.tareaId===tid_orig&&c.inciso==inc&&c.estado!=='anulado').reduce((s,c)=>s+c.monto,0);
+    if(monto>dispOrig+1){msg.innerHTML=`<div class="alert a-danger">La tarea origen no tiene suficiente saldo I${inc}: ${fm(dispOrig)}</div>`;return;}
+  }
+  const id=uid();
+  const arcs=TF.amp.map(f=>({nombre:f.name,tipo:f.type,ampliacionId:id,tareaId:tid,fecha,mes:mon(fecha),trimestre:fmtQ(mon(fecha))}));
+  // Si reasignación, verificar y descontar de origen inmediatamente
+  if(tipo==='reasignacion'&&tid_orig){
+    const tOrig=S.tareas.find(x=>x.id===tid_orig);
+    if(tOrig){
+      const key='i'+inc;
+      tOrig[key]=(tOrig[key]||0)-monto;
+      addHist('warn',`Reasignación: -${fm(monto)} I${inc} desde "${tOrig.desc.substring(0,40)}"`);
+    }
+  }
+  S.ampliaciones.push({id,tareaId:tid,tareaOrigenId:tipo==='reasignacion'?tid_orig:null,tipo,inciso:inc,monto,fecha,acto,motivo,estado:'aprobada',aprobadaPor:CU.name,fechaAprobacion:fecha,creadoPor:CU.name,archivos:arcs});
+  S.archivos.push(...arcs);
+  addHist('success',`Ampliación APROBADA +${fm(monto)} I${inc} → "${S.tareas.find(x=>x.id===tid)?.desc.substring(0,40)||'?'}" — ${acto||motivo}`);
+  TF.amp=[];document.getElementById('amp-flist').innerHTML='';
+  ['amp-monto','amp-acto','amp-motivo'].forEach(id=>document.getElementById(id).value='');
+  msg.innerHTML=`<div class="alert a-success">✅ Ampliación registrada y activa: +${fm(monto)} I${inc}. El crédito vigente se actualizó.</div>`;
+  toast('Ampliación registrada',`+${fm(monto)} I${inc} activo ahora`,'');
+  save();renderAll();renderAmpHist();updatePendBadge();
+  setTimeout(()=>msg.innerHTML='',6000);
+}
+
+function renderAmpHist(){
+  const el=document.getElementById('amp-hist');
+  if(!S.ampliaciones.length){el.innerHTML='<div class="empty">Sin ampliaciones registradas</div>';return;}
+  el.innerHTML=`<table class="gt" style="width:100%">
+    <thead><tr><th>Tarea destino</th><th>Tipo</th><th>Inciso</th><th style="text-align:right">Monto</th><th>Acto/Origen</th><th>Solicitado</th><th>Estado</th></tr></thead>
+    <tbody>${S.ampliaciones.map(a=>{
+      const t=S.tareas.find(x=>x.id===a.tareaId);
+      const to=a.tareaOrigenId?S.tareas.find(x=>x.id===a.tareaOrigenId):null;
+      return`<tr>
+        <td style="font-size:11px">${t?t.desc.substring(0,45):'?'}</td>
+        <td><span class="badge ${a.tipo==='externo'?'bd-prog':'bd-amp'}">${a.tipo==='externo'?'Externo':'Reasign.'}</span></td>
+        <td>I${a.inciso}</td>
+        <td style="text-align:right;font-family:var(--mono)">${fm(a.monto)}</td>
+        <td style="font-size:10px">${a.tipo==='externo'?a.acto||'—':`Desde: ${to?to.desc.substring(0,30):'?'}`}</td>
+        <td style="font-size:10px">${a.creadoPor} · ${a.fecha}</td>
+        <td><span class="badge ${a.estado==='aprobada'?'bd-ok':a.estado==='rechazada'?'bd-anul':'bd-pend'}">${a.estado}</span></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>`;
+}
+
+// ════════════════════════════════════════════
+// PENDIENTES (aprobaciones TC)
+// ════════════════════════════════════════════
+function renderPendientes(){
+  const el=document.getElementById('pend-list');
+  const pends=S.pendientes.filter(p=>p.estado==='pendiente');
+  if(!pends.length){el.innerHTML='<div class="empty">Sin solicitudes pendientes</div>';return;}
+  el.innerHTML=pends.map(p=>`
+    <div class="pend-item">
+      <div class="pend-tag">${p.tipo==='ampliacion'?'↑ Ampliación de crédito':p.tipo==='correccion'?'✏️ Corrección':'🗑 Anulación'}</div>
+      <div class="pend-desc">${p.desc}</div>
+      <div class="pend-meta">Solicitado por: <b>${p.solicitadoPor}</b> · ${p.fecha} · Motivo: ${p.motivo||'—'}</div>
+      <div class="pend-actions">
+        ${CU.rol==='tc'?`
+          <button class="btn btn-green btn-sm" onclick="aprobar('${p.id}')">✔ Aprobar</button>
+          <button class="btn btn-danger btn-sm" onclick="rechazar('${p.id}')">✕ Rechazar</button>
+        `:'<span style="font-size:10px;color:var(--text3)">Requiere aprobación del TC ESPINOLA</span>'}
+      </div>
+    </div>`).join('');
+}
+
+function aprobar(pid){
+  const p=S.pendientes.find(x=>x.id===pid);if(!p)return;
+  p.estado='aprobada';p.aprobadaPor=CU.name;p.fechaAprobacion=today();
+  if(p.tipo==='ampliacion'){
+    const amp=S.ampliaciones.find(a=>a.id===p.refId);
+    if(amp){
+      amp.estado='aprobada';amp.aprobadaPor=CU.name;amp.fechaAprobacion=today();
+      // Si reasignación, descuentar crédito de la tarea origen
+      if(amp.tipo==='reasignacion'&&amp.tareaOrigenId){
+        const tOrig=S.tareas.find(x=>x.id===amp.tareaOrigenId);
+        if(tOrig){
+          const key='i'+amp.inciso;
+          tOrig[key]=(tOrig[key]||0)-amp.monto;
+          addHist('warn',`Reasignación: -${fm(amp.monto)} I${amp.inciso} desde "${tOrig.desc.substring(0,40)}"`);
+        }
+      }
+      toast('Ampliación aprobada',`+${fm(amp.monto)} I${amp.inciso} vigente ahora`,'');
+    }
+  } else if(p.tipo==='correccion'||p.tipo==='anulacion'){
+    const ref=p.refId;const tipo2=p.tipo;
+    if(tipo2==='anulacion'){
+      const c=S.compromisos.find(x=>x.id===ref);const d=S.devengados.find(x=>x.id===ref);
+      if(c){c.estado='anulado';c.motivo=p.motivo;c.anuladoPor=CU.name;}
+      if(d){d.estado='anulado';d.motivo=p.motivo;d.anuladoPor=CU.name;}
+      toast('Anulación aprobada',p.desc,'');
+    } else {
+      const c=S.compromisos.find(x=>x.id===ref);const d=S.devengados.find(x=>x.id===ref);
+      if(c&&p.nuevoMonto){c.montoOriginal=c.monto;c.monto=p.nuevoMonto;c.corregidoPor=CU.name;}
+      if(d&&p.nuevoMonto){d.montoOriginal=d.monto;d.monto=p.nuevoMonto;d.corregidoPor=CU.name;}
+      toast('Corrección aprobada',p.desc,'');
+    }
+  }
+  addHist('success',`[TC] Aprobado: ${p.desc.substring(0,60)}`);
+  save();renderAll();renderPendientes();renderAmpHist();
+}
+
+function rechazar(pid){
+  const p=S.pendientes.find(x=>x.id===pid);if(!p)return;
+  const motivo=prompt('Motivo del rechazo (obligatorio):');
+  if(!motivo)return;
+  p.estado='rechazada';p.rechazadaPor=CU.name;p.motivoRechazo=motivo;
+  if(p.tipo==='ampliacion'){const amp=S.ampliaciones.find(a=>a.id===p.refId);if(amp)amp.estado='rechazada';}
+  addHist('danger',`[TC] Rechazado: ${p.desc.substring(0,50)} — ${motivo}`);
+  toast('Solicitud rechazada',p.desc,'err');
+  save();renderAll();renderPendientes();renderAmpHist();
+}
+
+// ════════════════════════════════════════════
+// CORRECCIÓN / ANULACIÓN
+// ════════════════════════════════════════════
+function abrirCorrecion(tipo,id){
+  corrTarget={tipo,id};
+  const isComp=S.compromisos.find(x=>x.id===id);
+  const isDev=S.devengados.find(x=>x.id===id);
+  const mov=isComp||isDev;
+  if(!mov)return;
+  document.getElementById('m-corr-title').textContent=tipo==='compromiso'?'✏️ Corrección de Compromiso':'✏️ Corrección de Devengado';
+  document.getElementById('m-corr-info').textContent=`Movimiento: ${fm(mov.monto)} — ${mov.acto||mov.cert||mov.fecha} — Cargado por: ${mov.creadoPor}`;
+  document.getElementById('corr-monto').value=mov.monto;
+  document.getElementById('corr-motivo').value='';
+  openModal('m-corregir');
+}
+
+function updCorrTipo(){
+  const t=document.getElementById('corr-tipo').value;
+  document.getElementById('corr-monto-sec').style.display=t==='correccion'?'block':'none';
+}
+
+function solicitarCorreccion(){
+  const tipoAccion=document.getElementById('corr-tipo').value;
+  const motivo=document.getElementById('corr-motivo').value.trim();
+  const nuevoMonto=+document.getElementById('corr-monto').value||0;
+  if(!motivo){alert('El motivo es obligatorio');return;}
+  const mov=corrTarget.tipo==='compromiso'?S.compromisos.find(x=>x.id===corrTarget.id):S.devengados.find(x=>x.id===corrTarget.id);
+  if(!mov)return;
+  const t=S.tareas.find(x=>x.id===mov.tareaId);
+  const desc=`${tipoAccion==='anulacion'?'Anulación':'Corrección'} de ${corrTarget.tipo} ${fm(mov.monto)}${tipoAccion==='correccion'?' → '+fm(nuevoMonto):''} — ${t?t.desc.substring(0,40):'?'}`;
+  S.pendientes.push({id:uid(),tipo:tipoAccion,refId:corrTarget.id,desc,motivo,nuevoMonto:tipoAccion==='correccion'?nuevoMonto:null,solicitadoPor:CU.name,fecha:today(),estado:'pendiente'});
+  addHist('warn',`Solicitud de ${tipoAccion}: ${desc.substring(0,60)}`);
+  toast('Solicitud enviada',`${desc.substring(0,60)} — pendiente TC`,'pend');
+  closeModal('m-corregir');save();updatePendBadge();checkPendBanner();
+}
+
+// ════════════════════════════════════════════
+// FILES
+// ════════════════════════════════════════════
+function hFiles(inputId,displayId,key){
+  const files=Array.from(document.getElementById(inputId).files);
+  TF[key]=[...TF[key],...files];
+  document.getElementById(displayId).innerHTML=TF[key].map(f=>`<span class="fchip">📄 ${f.name}</span>`).join('');
+}
+
+// ════════════════════════════════════════════
+// DOCUMENTOS
+// ════════════════════════════════════════════
+function renderDocs(){
+  const el=document.getElementById('docs-list');
+  let arcs=S.archivos;
+  if(docTabF==='comp')arcs=arcs.filter(a=>a.compromisoId);
+  if(docTabF==='dev')arcs=arcs.filter(a=>a.devengadoId);
+  if(docTabF==='amp')arcs=arcs.filter(a=>a.ampliacionId);
+  if(!arcs.length){el.innerHTML='<div class="empty">Sin documentación adjunta</div>';return;}
+  // Group by year > quarter > task > type
+  const tree={};
+  arcs.forEach(a=>{
+    const year='2026';
+    const q=a.trimestre||'Sin trimestre';
+    const tid=a.tareaId||'sin-tarea';
+    const tipo=a.compromisoId?'Compromisos':a.devengadoId?'Devengados':'Ampliaciones';
+    if(!tree[year])tree[year]={};
+    if(!tree[year][q])tree[year][q]={};
+    if(!tree[year][q][tid])tree[year][q][tid]={};
+    if(!tree[year][q][tid][tipo])tree[year][q][tid][tipo]=[];
+    tree[year][q][tid][tipo].push(a);
+  });
+  let html='';
+  Object.entries(tree).forEach(([year,qs])=>{
+    html+=`<div style="font-size:12px;font-weight:700;color:var(--gold);margin-bottom:10px;padding-bottom:5px;border-bottom:1px solid var(--border)">📁 ${year}</div>`;
+    Object.entries(qs).forEach(([q,tids])=>{
+      html+=`<div style="margin-left:10px;margin-bottom:8px"><div style="font-size:11px;font-weight:700;color:var(--text2);margin-bottom:6px">📂 ${q}</div>`;
+      Object.entries(tids).forEach(([tid,tipos])=>{
+        const t=S.tareas.find(x=>x.id===tid);
+        html+=`<div style="margin-left:14px;margin-bottom:6px"><div style="font-size:11px;color:var(--text);margin-bottom:4px">📁 ${t?t.desc.substring(0,65):'Tarea eliminada'}</div>`;
+        Object.entries(tipos).forEach(([tipo2,farcs])=>{
+          html+=`<div style="margin-left:14px;margin-bottom:4px"><div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">📂 ${tipo2} (${farcs.length})</div><div style="margin-left:10px">${farcs.map(f=>{
+            const ruta=getDocPath(f);
+            return`<div class="fchip" style="display:flex;flex-direction:column;gap:2px;height:auto;padding:5px 8px;margin-bottom:4px">
+              <div>📄 <b>${f.nombre}</b> <span style="color:var(--text3)">(${f.fecha})</span></div>
+              <div style="font-size:9px;font-family:var(--mono);color:var(--text3);word-break:break-all">📁 ${ruta}</div>
+            </div>`;
+          }).join('')}</div></div>`;
+        });
+        html+=`</div>`;
+      });
+      html+=`</div>`;
+    });
+  });
+  el.innerHTML=html;
+}
+
+// ════════════════════════════════════════════
+// HISTORIAL
+// ════════════════════════════════════════════
+function addHist(tipo,texto){
+  if(!CU)return;
+  S.historial.unshift({id:uid(),tipo,texto,ts:now(),user:CU.name});
+}
+function renderHist(){
+  const el=document.getElementById('hcont');
+  if(!S.historial.length){el.innerHTML='<div class="empty">Sin movimientos</div>';return;}
+  const cols={success:'var(--green)',info:'var(--blue2)',danger:'var(--red2)',warn:'var(--amber2)'};
+  el.innerHTML=S.historial.slice(0,100).map(h=>`
+    <div class="hitem">
+      <div class="hdot" style="background:${cols[h.tipo]||'#888'}"></div>
+      <div><div class="htext">${h.texto}</div><div class="htime">${h.ts} · ${h.user}</div></div>
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════
+// CIERRE
+// ════════════════════════════════════════════
+function renderCierre(){
+  const totVig=S.tareas.reduce((s,t)=>s+getCreditoVigente(t),0);
+  const totComp=S.compromisos.filter(c=>c.estado!=='anulado').reduce((s,c)=>s+c.monto,0);
+  const totDev=S.devengados.filter(d=>d.estado!=='anulado').reduce((s,d)=>s+d.monto,0);
+  const saldo=totVig-totDev;const ok=Math.abs(saldo)<1;
+  let incRows='';
+  [2,3,4,5,6].forEach(i=>{
+    const cr=S.tareas.reduce((s,t)=>s+getCreditoVigenteInc(t,i),0);
+    const co=S.compromisos.filter(c=>c.inciso==i&&c.estado!=='anulado').reduce((s,c)=>s+c.monto,0);
+    const dv=S.devengados.filter(d=>d.inciso==i&&d.estado!=='anulado').reduce((s,d)=>s+d.monto,0);
+    if(!cr)return;
+    incRows+=`<tr><td>I${i} — ${INCN[i]}</td><td style="text-align:right;font-family:var(--mono)">${fm(cr)}</td><td style="text-align:right;font-family:var(--mono);color:var(--amber2)">${fm(co)}</td><td style="text-align:right;font-family:var(--mono);color:var(--green2)">${fm(dv)}</td><td style="text-align:right">${cr?Math.round(dv/cr*100):0}%</td><td style="text-align:right;font-family:var(--mono);color:${cr-dv<0?'var(--red2)':cr-dv===0?'var(--green2)':'var(--text)'}">${fm(cr-dv)}</td></tr>`;
+  });
+  document.getElementById('cierre-content').innerHTML=`
+    <div class="cierre-box ${ok?'cg':'cr'}">
+      <div style="font-size:14px;font-weight:700;color:${ok?'var(--green2)':'var(--red2)'}">${ok?'✅ Ejercicio cerrado en cero':'⚠️ Saldo pendiente de devengar'}</div>
+      <div class="cierre-num" style="color:${ok?'var(--green2)':'var(--red2)'}">${fm(Math.abs(saldo))}</div>
+      <div style="font-size:11px;color:var(--text2)">${ok?'Crédito vigente devengado íntegramente.':'Monto pendiente al cierre del ejercicio.'}</div>
+    </div>
+    <div class="card"><div class="card-head"><div class="card-title">Estado por inciso (crédito vigente)</div></div>
+      <table class="gt"><thead><tr><th>Inciso</th><th style="text-align:right">Crédito vigente</th><th style="text-align:right">Comprometido</th><th style="text-align:right">Devengado</th><th style="text-align:right">Ej%</th><th style="text-align:right">Saldo</th></tr></thead>
+      <tbody>${incRows}</tbody>
+      <tfoot><tr><td>TOTAL</td><td style="text-align:right">${fm(totVig)}</td><td style="text-align:right;color:var(--gold2)">${fm(totComp)}</td><td style="text-align:right;color:var(--green2)">${fm(totDev)}</td><td style="text-align:right">${totVig?Math.round(totDev/totVig*100):0}%</td><td style="text-align:right;color:${saldo<0?'var(--red2)':saldo===0?'var(--green2)':'var(--gold)'}">${fm(saldo)}</td></tr></tfoot>
+      </table></div>
+    <div class="card"><div class="card-head"><div class="card-title">Estado por tarea (crédito vigente con ampliaciones)</div></div>
+      <table class="gt"><thead><tr><th>#</th><th>Tarea</th><th style="text-align:right">Original</th><th style="text-align:right">Ampliado</th><th style="text-align:right">Vigente</th><th style="text-align:right">Devengado</th><th style="text-align:right">Saldo</th><th>Estado</th></tr></thead>
+      <tbody>${S.tareas.map((t,idx)=>{
+        const orig=getTotalOrig(t);const vig=getCreditoVigente(t);const dv=getDev(t.id);const sd=vig-dv;
+        const bg=RC_BG[idx%10],bd=RC_BD[idx%10];
+        return`<tr class="${bg}"><td class="${bd}" style="font-weight:700">${idx+1}</td><td style="font-size:11px">${t.desc.substring(0,50)}</td><td style="text-align:right;font-family:var(--mono)">${fm(orig)}</td><td style="text-align:right;font-family:var(--mono);color:#b794ff">${fm(vig-orig)}</td><td style="text-align:right;font-family:var(--mono);font-weight:700">${fm(vig)}</td><td style="text-align:right;font-family:var(--mono);color:var(--green2)">${fm(dv)}</td><td style="text-align:right;font-family:var(--mono);color:${sd<0?'var(--red2)':sd===0?'var(--green2)':'var(--text)'}">${fm(sd)}</td><td>${semaforo(t)}</td></tr>`;
+      }).join('')}</tbody>
+      </table></div>
+    ${!ok?`<div class="alert a-warn">⚠️ Para cerrar el ejercicio en cero, devengá los ${fm(saldo)} restantes o solicitá las ampliaciones necesarias.</div>`:''}`;
+}
+
+// ════════════════════════════════════════════
+// REPORTES
+// ════════════════════════════════════════════
+function genReport(pkey){
+  const per=PERIODS[pkey];const months=per.months;
+  const comps=S.compromisos.filter(c=>months.includes(c.mes)&&c.estado!=='anulado');
+  const devs=S.devengados.filter(d=>months.includes(d.mes)&&d.estado!=='anulado');
+  const amps=S.ampliaciones.filter(a=>months.includes(a.mes)&&a.estado==='aprobada');
+  const arcs=S.archivos.filter(a=>months.includes(a.mes));
+  const totVig=S.tareas.reduce((s,t)=>s+getCreditoVigente(t),0);
+  const totOrig=S.tareas.reduce((s,t)=>s+getTotalOrig(t),0);
+  const totAmpTotal=S.ampliaciones.filter(a=>a.estado==='aprobada').reduce((s,a)=>s+a.monto,0);
+  const totComp=comps.reduce((s,c)=>s+c.monto,0);
+  const totDev=devs.reduce((s,d)=>s+d.monto,0);
+  const pct=totVig?Math.round(totDev/totVig*100):0;
+
+  // Evolución crédito
+  let evolRows='';
+  evolRows+=`<tr><td>Crédito original EF 2026</td><td>—</td><td>—</td><td style="text-align:right;font-family:var(--mono)">${fm(totOrig)}</td><td><span class="badge bd-comp">Inicial</span></td></tr>`;
+  S.ampliaciones.filter(a=>a.estado==='aprobada').forEach((a,i)=>{
+    const t=S.tareas.find(x=>x.id===a.tareaId);
+    evolRows+=`<tr><td>${t?t.desc.substring(0,45):'?'}</td><td>${a.tipo==='externo'?a.acto||'—':'Reasignación'}</td><td>${a.fecha}</td><td style="text-align:right;font-family:var(--mono);color:#b794ff">+${fm(a.monto)}</td><td><span class="badge bd-ok">Aprobada</span></td></tr>`;
+  });
+  evolRows+=`<tr style="font-weight:700"><td colspan="3">Crédito vigente total EF 2026</td><td style="text-align:right;font-family:var(--mono)">${fm(totVig)}</td><td></td></tr>`;
+
+  // Inciso rows
+  let incRows='';
+  [2,3,4,5,6].forEach(i=>{
+    const cr=S.tareas.reduce((s,t)=>s+getCreditoVigenteInc(t,i),0);
+    const co=comps.filter(c=>c.inciso==i).reduce((s,c)=>s+c.monto,0);
+    const dv=devs.filter(d=>d.inciso==i).reduce((s,d)=>s+d.monto,0);
+    if(!cr&&!co&&!dv)return;
+    incRows+=`<tr><td>I${i} — ${INCN[i]}</td><td style="text-align:right;font-family:var(--mono)">${fm(cr)}</td><td style="text-align:right;font-family:var(--mono)">${fm(co)}</td><td style="text-align:right;font-family:var(--mono)">${fm(dv)}</td><td>${cr?Math.round(dv/cr*100):0}%</td></tr>`;
+  });
+
+  // Tarea rows period
+  let tareaRows='';
+  S.tareas.forEach((t,idx)=>{
+    const co=comps.filter(c=>c.tareaId===t.id).reduce((s,c)=>s+c.monto,0);
+    const dv=devs.filter(d=>d.tareaId===t.id).reduce((s,d)=>s+d.monto,0);
+    const ampsPer=amps.filter(a=>a.tareaId===t.id).reduce((s,a)=>s+a.monto,0);
+    if(!co&&!dv&&!ampsPer)return;
+    const bg=RC_BG[idx%10],bd=RC_BD[idx%10];
+    tareaRows+=`<tr class="${bg}"><td class="${bd}" style="font-weight:700">${idx+1}</td><td style="font-size:11px">${t.desc.substring(0,55)}</td><td style="text-align:right;font-family:var(--mono)">${fm(getCreditoVigente(t))}</td>${ampsPer?`<td style="text-align:right;font-family:var(--mono);color:#b794ff">+${fm(ampsPer)}</td>`:'<td>—</td>'}<td style="text-align:right;font-family:var(--mono)">${fm(co)}</td><td style="text-align:right;font-family:var(--mono);color:var(--green2)">${fm(dv)}</td></tr>`;
+  });
+
+  // Compromisos detail
+  let compRows=comps.map(c=>{const t=S.tareas.find(x=>x.id===c.tareaId);return`<tr><td>${c.fecha}</td><td style="font-size:11px">${t?t.desc.substring(0,45):'?'}</td><td>I${c.inciso}</td><td style="text-align:right;font-family:var(--mono)">${fm(c.monto)}</td><td style="font-size:10px">${c.acto||'—'}</td><td style="font-size:10px">${c.creadoPor}</td></tr>`;}).join('');
+  let devRows=devs.map(d=>{const t=S.tareas.find(x=>x.id===d.tareaId);return`<tr><td>${d.fecha}</td><td style="font-size:11px">${t?t.desc.substring(0,45):'?'}</td><td>I${d.inciso}</td><td style="text-align:right;font-family:var(--mono)">${fm(d.monto)}</td><td style="font-size:10px">${d.cert||'—'}</td><td style="font-size:10px">${d.creadoPor}</td></tr>`;}).join('');
+
+  // Docs del período
+  let docSec='';
+  const docsByTarea={};
+  arcs.forEach(a=>{if(!docsByTarea[a.tareaId])docsByTarea[a.tareaId]=[];docsByTarea[a.tareaId].push(a);});
+  Object.entries(docsByTarea).forEach(([tid,farcs],idx)=>{
+    const t=S.tareas.find(x=>x.id===tid);
+    const bg=RC_BG[idx%10],bd=RC_BD[idx%10];
+    const ca=farcs.filter(a=>a.compromisoId);const da=farcs.filter(a=>a.devengadoId);const aa=farcs.filter(a=>a.ampliacionId);
+    docSec+=`<div class="${bg} ${bd}" style="padding:10px;border-radius:6px;margin-bottom:8px;border:1px solid var(--border)">
+      <div style="font-size:11px;font-weight:700;margin-bottom:6px">📁 ${t?t.desc.substring(0,70):'Tarea eliminada'}</div>
+      ${ca.length?`<div style="margin-bottom:4px"><span style="font-size:9px;color:var(--amber2);text-transform:uppercase;font-weight:700">Compromisos (${ca.length}): </span>${ca.map(f=>`<span class="fchip">📄 ${f.nombre}</span>`).join('')}</div>`:''}
+      ${da.length?`<div style="margin-bottom:4px"><span style="font-size:9px;color:var(--green2);text-transform:uppercase;font-weight:700">Devengados (${da.length}): </span>${da.map(f=>`<span class="fchip">📄 ${f.nombre}</span>`).join('')}</div>`:''}
+      ${aa.length?`<div><span style="font-size:9px;color:#b794ff;text-transform:uppercase;font-weight:700">Ampliaciones (${aa.length}): </span>${aa.map(f=>`<span class="fchip">📄 ${f.nombre}</span>`).join('')}</div>`:''}
+    </div>`;
+  });
+
+  // Amps del período
+  let ampRows=amps.map(a=>{const t=S.tareas.find(x=>x.id===a.tareaId);const to=a.tareaOrigenId?S.tareas.find(x=>x.id===a.tareaOrigenId):null;return`<tr><td>${a.fecha}</td><td style="font-size:11px">${t?t.desc.substring(0,40):'?'}</td><td><span class="badge ${a.tipo==='externo'?'bd-prog':'bd-amp'}">${a.tipo==='externo'?'Externo':'Reasign.'}</span></td><td>I${a.inciso}</td><td style="text-align:right;font-family:var(--mono)">${fm(a.monto)}</td><td style="font-size:10px">${a.tipo==='externo'?a.acto||'—':`Desde: ${to?to.desc.substring(0,30):'?'}`}</td><td style="font-size:10px">${a.aprobadaPor||'—'}</td></tr>`;}).join('');
+
+  const html=`
+  <div class="report-wrap">
+    <div class="rhead">
+      <div>
+        <div class="rhead-title">Ejército Argentino — DGCICD</div>
+        <div class="rhead-sub">Dirección General de Comunicaciones, Informática y Ciberdefensa</div>
+        <div class="rhead-sub" style="margin-top:3px">Reporte de Ejecución Presupuestaria — EF 2026</div>
+      </div>
+      <div style="text-align:right"><div class="rperiod">${per.label}</div><div style="font-size:10px;color:var(--text3);margin-top:4px">${per.range}</div></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px">
+      <div class="scard"><div class="sc-label">Crédito vigente EF</div><div class="sc-val" style="font-size:11px">${fm(totVig)}</div></div>
+      <div class="scard"><div class="sc-label">Comprometido período</div><div class="sc-val gold" style="font-size:11px">${fm(totComp)}</div></div>
+      <div class="scard"><div class="sc-label">Devengado período</div><div class="sc-val g" style="font-size:11px">${fm(totDev)}</div></div>
+      <div class="scard"><div class="sc-label">Ejecución período</div><div class="sc-val ${pct>80?'g':pct>40?'am':'r'}" style="font-size:11px">${pct}%</div></div>
+    </div>
+
+    <div class="rsec-title">0. Evolución del crédito (original + ampliaciones)</div>
+    <table class="gt" style="margin-bottom:14px"><thead><tr><th>Tarea / concepto</th><th>Acto</th><th>Fecha</th><th style="text-align:right">Monto</th><th>Estado</th></tr></thead><tbody>${evolRows}</tbody></table>
+
+    <div class="rsec-title">1. Ejecución por inciso</div>
+    <table class="gt" style="margin-bottom:14px"><thead><tr><th>Inciso</th><th style="text-align:right">Crédito vigente</th><th style="text-align:right">Comprometido</th><th style="text-align:right">Devengado</th><th style="text-align:right">Ejecución</th></tr></thead><tbody>${incRows||'<tr><td colspan="5" style="text-align:center;color:var(--text3)">Sin movimientos</td></tr>'}</tbody><tfoot><tr><td>TOTAL</td><td style="text-align:right">${fm(totVig)}</td><td style="text-align:right">${fm(totComp)}</td><td style="text-align:right">${fm(totDev)}</td><td style="text-align:right">${pct}%</td></tr></tfoot></table>
+
+    <div class="rsec-title">2. Ejecución por tarea</div>
+    <table class="gt" style="margin-bottom:14px"><thead><tr><th>#</th><th>Tarea</th><th style="text-align:right">Crédito vigente</th><th style="text-align:right">Ampliado período</th><th style="text-align:right">Comprometido</th><th style="text-align:right">Devengado</th></tr></thead><tbody>${tareaRows||'<tr><td colspan="6" style="text-align:center;color:var(--text3)">Sin movimientos</td></tr>'}</tbody></table>
+
+    ${amps.length?`<div class="rsec-title">3. Ampliaciones de crédito del período (${amps.length})</div>
+    <table class="gt" style="margin-bottom:14px"><thead><tr><th>Fecha</th><th>Tarea destino</th><th>Tipo</th><th>Inc.</th><th style="text-align:right">Monto</th><th>Acto / Origen</th><th>Aprobó</th></tr></thead><tbody>${ampRows}</tbody><tfoot><tr><td colspan="4">Total ampliado</td><td style="text-align:right">${fm(amps.reduce((s,a)=>s+a.monto,0))}</td><td colspan="2"></td></tr></tfoot></table>`:''}
+
+    <div class="rsec-title">${amps.length?'4':'3'}. Compromisos del período (${comps.length})</div>
+    <table class="gt" style="margin-bottom:14px"><thead><tr><th>Fecha</th><th>Tarea</th><th>Inc.</th><th style="text-align:right">Monto</th><th>Acto administrativo</th><th>Operador</th></tr></thead><tbody>${compRows||'<tr><td colspan="6" style="text-align:center;color:var(--text3)">Sin compromisos</td></tr>'}</tbody><tfoot><tr><td colspan="3">Total comprometido</td><td style="text-align:right">${fm(totComp)}</td><td colspan="2"></td></tr></tfoot></table>
+
+    <div class="rsec-title">${amps.length?'5':'4'}. Devengados del período (${devs.length})</div>
+    <table class="gt" style="margin-bottom:14px"><thead><tr><th>Fecha</th><th>Tarea</th><th>Inc.</th><th style="text-align:right">Monto</th><th>Certificado</th><th>Operador</th></tr></thead><tbody>${devRows||'<tr><td colspan="6" style="text-align:center;color:var(--text3)">Sin devengados</td></tr>'}</tbody><tfoot><tr><td colspan="3">Total devengado</td><td style="text-align:right">${fm(totDev)}</td><td colspan="2"></td></tr></tfoot></table>
+
+    <div class="rsec-title">${amps.length?'6':'5'}. Documentación del período (${arcs.length} archivo(s))</div>
+    ${docSec||'<div style="color:var(--text3);font-size:11px;padding:8px">Sin documentación adjunta en el período</div>'}
+
+    <div style="margin-top:28px;border-top:1px solid var(--border);padding-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div style="text-align:center;border:1px solid var(--border);border-radius:6px;padding:14px">
+        <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:40px">Firma del operador</div>
+        <div style="font-size:12px;font-weight:700;color:var(--text)">${CU.name}</div>
+        <div style="font-size:10px;color:var(--text3)">${CU.role}</div>
+      </div>
+      <div style="text-align:center;border:1px solid var(--border);border-radius:6px;padding:14px">
+        <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.6px;margin-bottom:40px">Visto bueno — Firma y sello</div>
+        <div style="font-size:12px;font-weight:700;color:var(--text)">TC Paulo ESPINOLA</div>
+        <div style="font-size:10px;color:var(--text3)">Teniente Coronel — DGPyP</div>
+      </div>
+    </div>
+    <div style="margin-top:10px;text-align:center;font-size:9px;color:var(--text3)">Generado: ${now()} · DGCICD — Ejército Argentino · EF 2026 · ${per.label} · ${per.range}</div>
+  </div>`;
+
+  document.getElementById('rcontent').innerHTML=html;
+  const rp=document.getElementById('rpreview');rp.style.display='block';rp.scrollIntoView({behavior:'smooth'});
+  addHist('info','Reporte '+per.label+' generado');save();
+}
+
+// ════════════════════════════════════════════
+// MODALS
+// ════════════════════════════════════════════
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open');releaseLock();}
+document.querySelectorAll('.modal-overlay').forEach(mo=>mo.addEventListener('click',e=>{if(e.target===mo)closeModal(mo.id)}));
+
+// ════════════════════════════════════════════
+// SINCRONIZACIÓN — CONFIG
+// ════════════════════════════════════════════
+function abrirConfigSync(){
+  document.getElementById('sync-url-input').value=SYNC_URL||'';
+  document.getElementById('sync-docpath-input').value=DOC_BASE_PATH||'';
+  document.getElementById('sync-test-result').innerHTML='';
+  openModal('m-sync');
+}
+function testSync(){
+  const url=document.getElementById('sync-url-input').value.trim();
+  const res=document.getElementById('sync-test-result');
+  if(!url){res.innerHTML='<div class="alert a-warn">Ingresá una URL para probar</div>';return;}
+  res.innerHTML='<div class="alert a-info">⏳ Probando conexión...</div>';
+  fetch(url+'?test=1').then(r=>{
+    if(r.ok){res.innerHTML='<div class="alert a-success">✅ Conexión exitosa. El servidor responde correctamente.</div>';}
+    else{res.innerHTML=`<div class="alert a-danger">❌ El servidor respondió con error ${r.status}</div>`;}
+  }).catch(e=>{
+    res.innerHTML='<div class="alert a-danger">❌ No se pudo conectar: '+e.message+'<br><span style="font-size:10px">Verificá que el servidor esté activo y la IP sea correcta</span></div>';
+  });
+}
+function guardarConfigSync(){
+  const url=document.getElementById('sync-url-input').value.trim();
+  const docPath=document.getElementById('sync-docpath-input').value.trim();
+  SYNC_URL=url;
+  localStorage.setItem('ea_sync_url',url);
+  if(docPath)localStorage.setItem('ea_doc_path',docPath);
+  closeModal('m-sync');
+  toast('Configuración guardada',url?'Sincronización de red activada':'Solo almacenamiento local activo','');
+  if(url)loadFromNetwork();
+}
+
+// ════════════════════════════════════════════
+// DOCUMENTOS — con ruta de carpeta
+// ════════════════════════════════════════════
+function getDocPath(a){
+  const base=localStorage.getItem('ea_doc_path')||'\\\\SERVIDOR\\DGCICD\\Presupuesto2026';
+  const tipo=a.compromisoId?'Compromisos':a.devengadoId?'Devengados':'Ampliaciones';
+  const q=a.trimestre||'SinTrimestre';
+  return base+'\\EF2026\\'+q+'\\'+tipo+'\\'+a.nombre;
+}
+
+// ════════════════════════════════════════════
+// BOOT
+// ════════════════════════════════════════════
+initLogin();
+</script>
+</body>
+</html>
